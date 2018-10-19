@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{874B2BFD-7619-494F-A6EF-E069079D1B05}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>BananaHomie.ZCopy</RootNamespace>
+    <AssemblyName>zcopy</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=2018.2.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.2018.2.1\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="McMaster.Extensions.CommandLineUtils, Version=2.2.5.0, Culture=neutral, PublicKeyToken=6f71cb76b82f055d, processorArchitecture=MSIL">
+      <HintPath>..\packages\McMaster.Extensions.CommandLineUtils.2.2.5\lib\net45\McMaster.Extensions.CommandLineUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnsiConsole\AnsiForegroundColor.cs" />
+    <Compile Include="AnsiConsole\EscapeCodes.cs" />
+    <Compile Include="AnsiConsole\Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="AnsiConsole\Extensions\StringExtensions.cs" />
+    <Compile Include="Commands\DelegatingSearchFilter.cs" />
+    <Compile Include="Commands\ZCopyCommand.cs" />
+    <Compile Include="Commands\ZCopyCommand.Methods.Private.cs" />
+    <Compile Include="Internal\EnvironmentVariableAttribute.cs" />
+    <Compile Include="Internal\Extensions\ByteExtensions.cs" />
+    <Compile Include="Internal\Extensions\FileSystemInfoExtensions.cs" />
+    <Compile Include="Internal\Extensions\ICopyProgressLoggerExtensions.cs" />
+    <Compile Include="Internal\Extensions\ISearchFilterExtensions.cs" />
+    <Compile Include="Internal\Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="Internal\Extensions\StringExtensions.cs" />
+    <Compile Include="Internal\FileCopyException.cs" />
+    <Compile Include="Internal\FileHash.cs" />
+    <Compile Include="Internal\ProgressCallback.cs" />
+    <Compile Include="Internal\ZCopyConfiguration.cs" />
+    <Compile Include="Internal\ZCopyEnvironment.cs" />
+    <Compile Include="IO\DirectoryFoundEventArgs.cs" />
+    <Compile Include="IO\FileAgeFilter.cs" />
+    <Compile Include="IO\FileAttributeFilter.cs" />
+    <Compile Include="IO\FileCopyStats.cs" />
+    <Compile Include="IO\FileFoundEventArgs.cs" />
+    <Compile Include="IO\FileHashComputedEventArgs.cs" />
+    <Compile Include="IO\FileNameFilter.cs" />
+    <Compile Include="IO\FileOperationCompletedEventArgs.cs" />
+    <Compile Include="IO\FileOperationErrorEventArgs.cs" />
+    <Compile Include="IO\FileOperationStartedEventArgs.cs" />
+    <Compile Include="IO\FileSize.cs" />
+    <Compile Include="IO\FileSystemItemFoundEventArgs.cs" />
+    <Compile Include="IO\FileSystemSearchErrorEventArgs.cs" />
+    <Compile Include="IO\IFileOperationHandler.cs" />
+    <Compile Include="IO\MD5Verification.cs" />
+    <Compile Include="IO\MinFileSizeFilter.cs" />
+    <Compile Include="IO\Threading\MultiThreadedFileCopy.cs" />
+    <Compile Include="IO\Threading\MultiThreadedFileMove.cs" />
+    <Compile Include="IO\Threading\MultiThreadedFileOperation.cs" />
+    <Compile Include="IO\Threading\MultiThreadedFileOperationState.cs" />
+    <Compile Include="IO\WhatToCopy.cs" />
+    <Compile Include="IO\FileSystemSearch.cs" />
+    <Compile Include="IO\MaxFileSizeFilter.cs" />
+    <Compile Include="IO\MD5VerificationFinishedEventArgs.cs" />
+    <Compile Include="IO\MD5VerificationStartedEventArgs.cs" />
+    <Compile Include="IO\MoveOptions.cs" />
+    <Compile Include="IO\ISearchFilter.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
+    <Compile Include="IO\CopyOptions.cs" />
+    <Compile Include="Logging\CopySpeedUomTypes.cs" />
+    <Compile Include="Logging\EventLogger.cs" />
+    <Compile Include="Logging\FileLogger.cs" />
+    <Compile Include="Internal\Helpers.cs" />
+    <Compile Include="Logging\ICopyProgressLogger.cs" />
+    <Compile Include="Internal\NativeMethods.cs" />
+    <Compile Include="Internal\SafeTokenHandle.cs" />
+    <Compile Include="Internal\Utilities.cs" />
+    <Compile Include="IO\FileOperationProgressEventArgs.cs" />
+    <Compile Include="IO\FileCopy.cs" />
+    <Compile Include="IO\FileMove.cs" />
+    <Compile Include="IO\FileOperation.cs" />
+    <Compile Include="Logging\MultiThreadedConsoleLogger.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Compile Include="Commands\ZCopyCommand.Properties.cs" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
