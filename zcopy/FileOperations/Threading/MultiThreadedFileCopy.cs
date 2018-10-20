@@ -1,11 +1,11 @@
-﻿using System;
+﻿using BananaHomie.ZCopy.FileSystemSearch;
+using BananaHomie.ZCopy.Internal;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using BananaHomie.ZCopy.FileSystemSearch;
-using BananaHomie.ZCopy.Internal;
 
 namespace BananaHomie.ZCopy.FileOperations.Threading
 {
@@ -13,10 +13,7 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
     {        
         #region Fields
 
-        [Obsolete]
-        private readonly Dictionary<Guid, MultiThreadedFileOperationState> threadTable;
-
-        private ConcurrentQueue<MultiThreadedFileOperationState> queue;
+        private readonly ConcurrentQueue<MultiThreadedFileOperationState> queue;
 
         #endregion
 
@@ -35,7 +32,6 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
             List<ISearchFilter> directoryFilters) 
             : base(source, destination, fileFilters, directoryFilters)
         {
-            //threadTable = new Dictionary<Guid, MultiThreadedFileOperationState>();
             queue = new ConcurrentQueue<MultiThreadedFileOperationState>();
         }
 
@@ -47,9 +43,11 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
         {
             base.cancellation = cancellationToken;
 
-            InitializeThreadTable();                        
+            InitializeThreads();                        
             SearchForAndCopyFiles();
-            DisposeThreadTable();
+
+            while (queue.Any() && !cancellation.IsCancellationRequested)
+                Thread.Sleep(500);
         }
 
         #endregion
@@ -65,23 +63,10 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
 
         #region Private methods
 
-        private void InitializeThreadTable()
+        private void InitializeThreads()
         {
             for (var i = 0; i < MaxThreads; i++)
-            {
-                //var threadState = new MultiThreadedFileOperationState();
-                
-                //threadTable.Add(threadState.Guid, threadState);
                 ThreadPool.QueueUserWorkItem(CopyThreadProc);
-            }
-        }
-
-        private void DisposeThreadTable()
-        {
-            while (queue.Any())
-                Thread.Sleep(500);
-            //foreach (var item in threadTable)
-            //    item.Value.Dispose();
         }
 
         private void SearchForAndCopyFiles()
@@ -110,38 +95,17 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
                 Thread.Sleep(500);
 
             queue.Enqueue(new MultiThreadedFileOperationState(file, target));
-
-            //if (cancellation.IsCancellationRequested)
-            //    return;
-
-            //Guid threadId;
-
-            //lock (SynchronizingObject)
-            //{
-            //    threadId = threadTable.First(t => t.Value.IsReady && t.Value.Queue.Count < 5).Key;
-            //    //threadTable[threadId].SourceFile = file;
-            //    //threadTable[threadId].TargetFile = target;
-            //    threadTable[threadId].IsCompleted = false;
-            //    threadTable[threadId].Queue.Enqueue((file, target));
-            //    threadTable[threadId].WaitHandle.Set();
-            //}
-
-            //// Wait for thread to start copying file
-            //while (IsThreadReady(threadId))
-            //    Thread.Sleep(500);
         }
 
         private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
-        {
-            // I should do something here
+        {            
+            OnError(sender, new FileOperationErrorEventArgs(e.Exception));
         }
 
         #endregion
 
         private void CopyThreadProc(object state)
         {
-            //var threadId = (Guid) state;
-
             while (!cancellation.IsCancellationRequested)
             {
                 MultiThreadedFileOperationState targets;
@@ -176,38 +140,8 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
                 {
                     OnError(this, new FileOperationErrorEventArgs(e));
                 }
-                //finally
-                //{
-                //    lock (SynchronizingObject)
-                //    {
-                //        threadTable[threadId].IsReady = true;
-                //        threadTable[threadId].IsCompleted = true;
-                //    }
-                //}
             }
-
-            //lock (SynchronizingObject)
-            //{
-            //    threadTable[threadId].IsReady = true;
-            //    threadTable[threadId].IsCompleted = true;
-            //}
         }
-
-        //private AutoResetEvent GetThreadWaitHandle(Guid threadId)
-        //{
-        //    lock (SynchronizingObject) return threadTable[threadId].WaitHandle;
-        //}
-
-        //private bool AllThreadsBusy()
-        //{
-        //    lock (SynchronizingObject)
-        //        return threadTable.All(t => t.Value.Queue.Count >= 5);
-        //}
-
-        //private bool IsThreadReady(Guid threadId)
-        //{
-        //    lock (SynchronizingObject) return threadTable[threadId].IsReady && !threadTable[threadId].IsCompleted;
-        //}
 
         #endregion
     }

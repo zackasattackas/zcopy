@@ -15,6 +15,7 @@ namespace BananaHomie.ZCopy.Logging
     {
         #region Fields
 
+        private object lockObj;
         private int fileCount;
         private int filesBeingCopied;
         private long bytesCopied; // Support for up to 8 petabytes (Int64.MaxValue)
@@ -30,6 +31,7 @@ namespace BananaHomie.ZCopy.Logging
 
         public BasicConsoleLogger(CopySpeedUomTypes uom = CopySpeedUomTypes.Megabits)
         {
+            lockObj = new object();
             displayUom = uom;
         }
 
@@ -81,7 +83,9 @@ namespace BananaHomie.ZCopy.Logging
 
         private void MtfoOnError(object sender, FileOperationErrorEventArgs e)
         {
-            // Not used yet
+            lock (lockObj)
+                Console.Error.WriteLine((e.Exception.Message + " " + e.Exception.InnerException?.Message)
+                    .ColorText(EscapeCodes.ForegroundRed));
         }
 
         #endregion
@@ -109,7 +113,8 @@ namespace BananaHomie.ZCopy.Logging
             {
                 var (speedBase, uom) = Helpers.GetCopySpeedBase(ZCopyConfiguration.CopySpeedUom);
                 var speed = Helpers.GetCopySpeed(bytesCopied, speedBase, stopwatch.Elapsed);
-                Console.Out.Write(progressFormat, fileCount, new FileSize(bytesCopied), Helpers.CopySpeedToString(uom, speed));
+                lock (lockObj)
+                    Console.Out.Write(progressFormat, fileCount, new FileSize(bytesCopied), Helpers.CopySpeedToString(uom, speed));
 
                 Thread.Sleep(ZCopyConfiguration.RefreshInterval);
             }
