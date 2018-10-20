@@ -62,11 +62,16 @@
     <Compile Include="Commands\ZCopyCommand.cs" />
     <Compile Include="Commands\ZCopyCommand.Methods.Private.cs" />
     <Compile Include="AnsiConsole\AnsiConsole.cs" />
+    <Compile Include="FileOperations\BasicFileComparer.cs" />
+    <Compile Include="FileOperations\FileEqualityComparer.cs" />
+    <Compile Include="FileOperations\FileComparerWithAttributes.cs" />
+    <Compile Include="FileOperations\FileComparerWithTimeStamps.cs" />
+    <Compile Include="FileOperations\FileOperationRetryStartedEventArgs.cs" />
     <Compile Include="Internal\EnvironmentVariableAttribute.cs" />
     <Compile Include="Internal\Extensions\ByteExtensions.cs" />
     <Compile Include="Internal\Extensions\FileSystemInfoExtensions.cs" />
     <Compile Include="Internal\Extensions\ICopyProgressLoggerExtensions.cs" />
-    <Compile Include="Internal\Extensions\ISearchFilterExtensions.cs" />
+    <Compile Include="Internal\Extensions\SearchFilterExtensions.cs" />
     <Compile Include="Internal\Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Internal\Extensions\StringExtensions.cs" />
     <Compile Include="FileOperations\FileCopyException.cs" />
@@ -129,7 +134,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_AssemblyInfoFilename="" BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
+      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
