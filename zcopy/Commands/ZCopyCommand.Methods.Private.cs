@@ -1,5 +1,7 @@
 ﻿using BananaHomie.ZCopy.AnsiConsole;
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
+using BananaHomie.ZCopy.FileOperations;
+using BananaHomie.ZCopy.FileSystemSearch;
 using BananaHomie.ZCopy.Internal;
 using BananaHomie.ZCopy.Internal.Extensions;
 using BananaHomie.ZCopy.Logging;
@@ -11,8 +13,6 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using BananaHomie.ZCopy.FileOperations;
-using BananaHomie.ZCopy.FileSystemSearch;
 
 namespace BananaHomie.ZCopy.Commands
 {
@@ -56,7 +56,7 @@ namespace BananaHomie.ZCopy.Commands
 
             Console.Out.WriteLine(fmt, FormatHeader("Source"), operation.Source.FullName);
             Console.Out.WriteLine(fmt, FormatHeader("Destination"), operation.Destination.FullName);
-            Console.Out.WriteLine(fmt, FormatHeader("Files"), String.Join(", ", app.Arguments[2].Values));
+            Console.Out.WriteLine(fmt, FormatHeader("Files"), app.Arguments[2].Values.Any() ? string.Join(", ",  app.Arguments[2].Values) : "*.*");
             Console.Out.WriteLine(fmt, FormatHeader("Options"), GetUserOptions());
             Console.Out.WriteLine();
 
@@ -109,8 +109,8 @@ namespace BananaHomie.ZCopy.Commands
             var uom = GetCopySpeedUom();
 
             if (!NoConsoleOutput && !Console.IsOutputRedirected)
-                if (ThreadCount.HasValue)
-                    list.Add(new MultiThreadedConsoleLogger(uom));
+                if (BasicConsoleOutput || ThreadCount.HasValue)
+                    list.Add(new BasicConsoleLogger(uom));
                 else
                     list.Add(new ConsoleLogger(uom));
             if (LogFile != null)

@@ -128,6 +128,9 @@ namespace BananaHomie.ZCopy.Commands
         [Option("-nc", "Do not write progress messages to the console", CommandOptionType.NoValue)]
         public bool NoConsoleOutput { get; set; }
 
+        [Option("-bc", "Display basic output for improved performance", CommandOptionType.NoValue)]
+        public bool BasicConsoleOutput { get; set; }
+
         [Option("-cr=<ms>", "The interval in milliseconds to refresh progress information at the console", CommandOptionType.SingleValue)]
         public int RefreshInterval { get; set; } = 1000;
 

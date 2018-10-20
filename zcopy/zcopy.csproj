@@ -115,7 +115,7 @@
     <Compile Include="FileOperations\FileCopy.cs" />
     <Compile Include="FileOperations\FileMove.cs" />
     <Compile Include="FileOperations\FileOperation.cs" />
-    <Compile Include="Logging\MultiThreadedConsoleLogger.cs" />
+    <Compile Include="Logging\BasicConsoleLogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

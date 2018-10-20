@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +13,10 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
     {        
         #region Fields
 
+        [Obsolete]
         private readonly Dictionary<Guid, MultiThreadedFileOperationState> threadTable;
+
+        private ConcurrentQueue<MultiThreadedFileOperationState> queue;
 
         #endregion
 
@@ -31,7 +35,8 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
             List<ISearchFilter> directoryFilters) 
             : base(source, destination, fileFilters, directoryFilters)
         {
-            threadTable = new Dictionary<Guid, MultiThreadedFileOperationState>();
+            //threadTable = new Dictionary<Guid, MultiThreadedFileOperationState>();
+            queue = new ConcurrentQueue<MultiThreadedFileOperationState>();
         }
 
         #endregion
@@ -64,19 +69,19 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
         {
             for (var i = 0; i < MaxThreads; i++)
             {
-                var threadState = new MultiThreadedFileOperationState();
+                //var threadState = new MultiThreadedFileOperationState();
                 
-                threadTable.Add(threadState.Guid, threadState);
-                ThreadPool.QueueUserWorkItem(CopyThreadProc, threadState.Guid);
+                //threadTable.Add(threadState.Guid, threadState);
+                ThreadPool.QueueUserWorkItem(CopyThreadProc);
             }
         }
 
         private void DisposeThreadTable()
         {
-            while (threadTable.Any(t => !t.Value.IsReady))
+            while (queue.Any())
                 Thread.Sleep(500);
-            foreach (var item in threadTable)
-                item.Value.Dispose();
+            //foreach (var item in threadTable)
+            //    item.Value.Dispose();
         }
 
         private void SearchForAndCopyFiles()
@@ -98,28 +103,32 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
             if (cancellation.IsCancellationRequested)
                 return;
 
-            var target = Utilities.GetDestinationFile(Source, file, Destination);
+            var target = Utilities.GetDestinationFile(Source, file, Destination);            
 
-            while (AllThreadsBusy() && !cancellation.IsCancellationRequested)
+            // Block so we don't queue too many files at once.
+            while (queue.Count > MaxThreads * 5 && !cancellation.IsCancellationRequested)
                 Thread.Sleep(500);
 
-            if (cancellation.IsCancellationRequested)
-                return;
+            queue.Enqueue(new MultiThreadedFileOperationState(file, target));
 
-            Guid threadId;
+            //if (cancellation.IsCancellationRequested)
+            //    return;
 
-            lock (SynchronizingObject)
-            {
-                threadId = threadTable.First(t => t.Value.IsReady).Key;
-                threadTable[threadId].SourceFile = file;
-                threadTable[threadId].TargetFile = target;
-                threadTable[threadId].IsCompleted = false;
-                threadTable[threadId].WaitHandle.Set();
-            }
+            //Guid threadId;
 
-            // Wait for thread to start copying file
-            while (IsThreadReady(threadId))
-                Thread.Sleep(500);
+            //lock (SynchronizingObject)
+            //{
+            //    threadId = threadTable.First(t => t.Value.IsReady && t.Value.Queue.Count < 5).Key;
+            //    //threadTable[threadId].SourceFile = file;
+            //    //threadTable[threadId].TargetFile = target;
+            //    threadTable[threadId].IsCompleted = false;
+            //    threadTable[threadId].Queue.Enqueue((file, target));
+            //    threadTable[threadId].WaitHandle.Set();
+            //}
+
+            //// Wait for thread to start copying file
+            //while (IsThreadReady(threadId))
+            //    Thread.Sleep(500);
         }
 
         private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
@@ -131,20 +140,16 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
 
         private void CopyThreadProc(object state)
         {
-            var threadId = (Guid) state;
-            var waitHandle = GetThreadWaitHandle(threadId);
+            //var threadId = (Guid) state;
 
             while (!cancellation.IsCancellationRequested)
             {
-                waitHandle.WaitOne();
-                FileInfo source, target;
-
-                lock (SynchronizingObject)
-                {
-                    threadTable[threadId].IsReady = false;
-                    source = threadTable[threadId].SourceFile;
-                    target = threadTable[threadId].TargetFile;
-                }
+                MultiThreadedFileOperationState targets;
+                while (!queue.TryDequeue(out targets))
+                    Thread.Sleep(500);
+                
+                var source = targets.SourceFile;
+                var target = targets.TargetFile;
 
                 try
                 {
@@ -171,38 +176,38 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
                 {
                     OnError(this, new FileOperationErrorEventArgs(e));
                 }
-                finally
-                {
-                    lock (SynchronizingObject)
-                    {
-                        threadTable[threadId].IsReady = true;
-                        threadTable[threadId].IsCompleted = true;
-                    }
-                }
+                //finally
+                //{
+                //    lock (SynchronizingObject)
+                //    {
+                //        threadTable[threadId].IsReady = true;
+                //        threadTable[threadId].IsCompleted = true;
+                //    }
+                //}
             }
 
-            lock (SynchronizingObject)
-            {
-                threadTable[threadId].IsReady = true;
-                threadTable[threadId].IsCompleted = true;
-            }
+            //lock (SynchronizingObject)
+            //{
+            //    threadTable[threadId].IsReady = true;
+            //    threadTable[threadId].IsCompleted = true;
+            //}
         }
 
-        private AutoResetEvent GetThreadWaitHandle(Guid threadId)
-        {
-            lock (SynchronizingObject) return threadTable[threadId].WaitHandle;
-        }
+        //private AutoResetEvent GetThreadWaitHandle(Guid threadId)
+        //{
+        //    lock (SynchronizingObject) return threadTable[threadId].WaitHandle;
+        //}
 
-        private bool AllThreadsBusy()
-        {
-            lock (SynchronizingObject)
-                return threadTable.All(t => !t.Value.IsReady);
-        }
+        //private bool AllThreadsBusy()
+        //{
+        //    lock (SynchronizingObject)
+        //        return threadTable.All(t => t.Value.Queue.Count >= 5);
+        //}
 
-        private bool IsThreadReady(Guid threadId)
-        {
-            lock (SynchronizingObject) return threadTable[threadId].IsReady && !threadTable[threadId].IsCompleted;
-        }
+        //private bool IsThreadReady(Guid threadId)
+        //{
+        //    lock (SynchronizingObject) return threadTable[threadId].IsReady && !threadTable[threadId].IsCompleted;
+        //}
 
         #endregion
     }

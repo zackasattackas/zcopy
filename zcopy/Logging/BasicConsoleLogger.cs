@@ -11,7 +11,7 @@ using BananaHomie.ZCopy.FileOperations.Threading;
 
 namespace BananaHomie.ZCopy.Logging
 {
-    internal class MultiThreadedConsoleLogger : ICopyProgressLogger
+    internal class BasicConsoleLogger : ICopyProgressLogger
     {
         #region Fields
 
@@ -28,7 +28,7 @@ namespace BananaHomie.ZCopy.Logging
 
         #region Ctor
 
-        public MultiThreadedConsoleLogger(CopySpeedUomTypes uom = CopySpeedUomTypes.Megabits)
+        public BasicConsoleLogger(CopySpeedUomTypes uom = CopySpeedUomTypes.Megabits)
         {
             displayUom = uom;
         }
@@ -39,13 +39,12 @@ namespace BananaHomie.ZCopy.Logging
 
         public void Initialize(CommandLineApplication app, FileOperation operation)
         {
-            var mtfo = (MultiThreadedFileOperation) operation;
-            mtfo.OperationStarted += MtfoOnOperationStarted;
-            mtfo.OperationCompleted += MtfoOnOperationCompleted;
-            mtfo.ChunkFinished += MtfoOnChunkFinished;
-            mtfo.Error += MtfoOnError;
+            operation.OperationStarted += MtfoOnOperationStarted;
+            operation.OperationCompleted += MtfoOnOperationCompleted;
+            operation.ChunkFinished += MtfoOnChunkFinished;
+            operation.Error += MtfoOnError;
 
-            isCopy = mtfo is MultiThreadedFileCopy;
+            isCopy = operation is FileCopy || operation is MultiThreadedFileCopy;
             cancellation = new CancellationTokenSource();
             stopwatch = Stopwatch.StartNew();
 
