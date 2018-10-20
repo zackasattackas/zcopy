@@ -48,10 +48,14 @@ namespace BananaHomie.ZCopy.Commands
 
             if (!NoFooter)
                 PrintFooter(operation);
+
+            ResetConsoleSettings();
         }
 
         private static void SetConsoleSettings()
         {
+            Console.CursorVisible = false;
+
             if (Console.BufferWidth < 120)
                 Console.BufferWidth = 120;
             if (ZCopyConfiguration.Environment.DisableAnsiConsole)
@@ -59,6 +63,18 @@ namespace BananaHomie.ZCopy.Commands
             if (!NativeMethods.GetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE), out var mode))
                 Helpers.ThrowLastWin32Exception();
             if (!NativeMethods.SetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE), (mode | NativeMethods.ENABLE_VIRTUAL_TERMINAL_PROCESSING) ^ NativeMethods.ENABLE_WRAP_AT_EOL_OUTPUT))
+                Helpers.ThrowLastWin32Exception();
+        }
+
+        private static void ResetConsoleSettings()
+        {
+            Console.CursorVisible = true;
+
+            if (ZCopyConfiguration.Environment.DisableAnsiConsole)
+                return;
+            if (!NativeMethods.GetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE), out var mode))
+                Helpers.ThrowLastWin32Exception();
+            if (!NativeMethods.SetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE), (mode ^ NativeMethods.ENABLE_VIRTUAL_TERMINAL_PROCESSING) | NativeMethods.ENABLE_WRAP_AT_EOL_OUTPUT))
                 Helpers.ThrowLastWin32Exception();
         }
     }

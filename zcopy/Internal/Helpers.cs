@@ -52,7 +52,8 @@ namespace BananaHomie.ZCopy.Internal
 
         public static TimeSpan GetTimeRemaining(long totalSize, long bytesCopied, double speed, double baseValue)
         {
-            return TimeSpan.FromSeconds(((double)totalSize - bytesCopied) / baseValue / speed);
+            var seconds = ((double) totalSize - bytesCopied) / baseValue / speed;
+            return TimeSpan.FromSeconds(double.IsNaN(seconds) ? 0 : seconds);
         }
 
         public static string EtaToString(TimeSpan eta)
