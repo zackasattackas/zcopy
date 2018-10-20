@@ -22,7 +22,7 @@ C:\> zcopy C:\users\zack D:\MyProfileData -r -mt -da=HR!
 ### Command-line Syntax
 ```
 C:\> zcopy --help
-zcopy 0.0.225.134
+zcopy 0.0.226.223
 
 File copy with progress!
 
@@ -52,8 +52,8 @@ Options:
   --min-age=<datetime>        Exclude files newer than 'MM-dd-yyyy HH:mm'
   --max-size=<bytes>          Exclude files larger than n bytes
   --min-size=<bytes>          Exclude files smaller than n bytes
-  -nc                         Do not write progress messages to the console
-  -bc                         Display basic output for improved performance
+  -no|--no-output             Do not write progress messages to the console
+  -bo|--basic-output          Display basic output for improved performance
   -cr=<ms>                    The interval in milliseconds to refresh progress information at the console
   -uom=<uom>                  Display copy speed in uom/s
   -nh|--no-header             Do not print the header information
