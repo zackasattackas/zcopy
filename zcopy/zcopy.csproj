@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnsiConsole\AnsiForegroundColor.cs" />
     <Compile Include="AnsiConsole\EscapeCodes.cs" />
     <Compile Include="AnsiConsole\Extensions\StringBuilderExtensions.cs" />
     <Compile Include="AnsiConsole\Extensions\StringExtensions.cs" />

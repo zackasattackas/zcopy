@@ -1,7 +1,29 @@
 ﻿namespace BananaHomie.ZCopy.AnsiConsole
 {
-    internal static class EscapeCodes
+    public static class EscapeCodes
     {
+        private static class AnsiForegroundColor
+        {
+            public const string Black = "30";
+            public const string Red = "31";
+            public const string Green = "32";
+            public const string Yellow = "33";
+            public const string Blue = "34";
+            public const string Magenta = "35";
+            public const string Cyan = "36";
+            public const string White = "37";
+            // ReSharper disable once MemberHidesStaticFromOuterClass
+            public const string Default = "39";
+            public const string BrightBlack = "90";
+            public const string BrightRed = "91";
+            public const string BrightGreen = "92";
+            public const string BrightYellow = "99";
+            public const string BrightBlue = "94";
+            public const string BrightMagenta = "95";
+            public const string BrightCyan = "96";
+            public const string BrightWhite = "97";
+        }
+
         public const string Esc = "\u001b";
         public const string LeftSquareBracket = "\u005B";
         public const string RightSquareBracket = "\u005D";

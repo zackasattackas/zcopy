@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BananaHomie.ZCopy.Internal.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography;
-using BananaHomie.ZCopy.Internal.Extensions;
 
 namespace BananaHomie.ZCopy.FileOperations
 {
