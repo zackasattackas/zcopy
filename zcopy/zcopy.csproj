@@ -90,10 +90,10 @@
     <Compile Include="FileOperations\IFileOperationHandler.cs" />
     <Compile Include="FileOperations\MD5Verification.cs" />
     <Compile Include="FileSystemSearch\MinFileSizeFilter.cs" />
-    <Compile Include="Threading\MultiThreadedFileCopy.cs" />
-    <Compile Include="Threading\MultiThreadedFileMove.cs" />
-    <Compile Include="Threading\MultiThreadedFileOperation.cs" />
-    <Compile Include="Threading\MultiThreadedFileOperationState.cs" />
+    <Compile Include="FileOperations\Threading\MultiThreadedFileCopy.cs" />
+    <Compile Include="FileOperations\Threading\MultiThreadedFileMove.cs" />
+    <Compile Include="FileOperations\Threading\MultiThreadedFileOperation.cs" />
+    <Compile Include="FileOperations\Threading\MultiThreadedFileOperationState.cs" />
     <Compile Include="FileOperations\WhatToCopy.cs" />
     <Compile Include="FileSystemSearch\FileSystemSearch.cs" />
     <Compile Include="FileSystemSearch\MaxFileSizeFilter.cs" />
@@ -124,9 +124,7 @@
     <Compile Include="Commands\ZCopyCommand.Properties.cs" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Cryptography\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
