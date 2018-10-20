@@ -79,10 +79,10 @@ namespace BananaHomie.ZCopy.Commands
             CommandOptionType.SingleValue)]
         public string WhatToCopy { get; set; } = "TAS";
 
-        [Option("--retry=<count>", "Retry the operation n times on failure", CommandOptionType.SingleValue)]
+        [Option("-rc|--retry-count=<count>", "Retry the operation n times on failure", CommandOptionType.SingleValue)]
         public int RetryCount { get; set; }
 
-        [Option("--retry-interval=<secs>", "Wait n seconds before retrying", CommandOptionType.SingleValue)]
+        [Option("-ri|--retry-interval=<secs>", "Wait n seconds before retrying", CommandOptionType.SingleValue)]
         public int RetryIntervalSeconds { get; set; }
 
         #endregion
