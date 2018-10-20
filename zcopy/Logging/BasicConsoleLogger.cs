@@ -55,7 +55,7 @@ namespace BananaHomie.ZCopy.Logging
 
         public void Deinitialize(CommandLineApplication app, FileOperation operation)
         {
-            Console.Out.WriteLine("\u001b[1M\u001b[2A");
+            ZCopyOutput.Print("\u001b[1M\u001b[2A");
             cancellation?.Cancel();
             cancellation?.Dispose();
         }
@@ -84,8 +84,7 @@ namespace BananaHomie.ZCopy.Logging
         private void MtfoOnError(object sender, FileOperationErrorEventArgs e)
         {
             lock (lockObj)
-                Console.Error.WriteLine((e.Exception.Message + " " + e.Exception.InnerException?.Message)
-                    .ColorText(EscapeCodes.ForegroundRed));
+                ZCopyOutput.PrintError(e.Exception.Message + " " + e.Exception.InnerException?.Message);
         }
 
         #endregion
@@ -113,7 +112,7 @@ namespace BananaHomie.ZCopy.Logging
                 var (speedBase, uom) = Helpers.GetCopySpeedBase(ZCopyConfiguration.CopySpeedUom);
                 var speed = Helpers.GetCopySpeed(bytesCopied, speedBase, stopwatch.Elapsed);
                 lock (lockObj)
-                    Console.Out.Write(progressFormat, fileCount, new FileSize(bytesCopied), Helpers.CopySpeedToString(uom, speed));
+                    ZCopyOutput.Print(progressFormat, fileCount, new FileSize(bytesCopied),Helpers.CopySpeedToString(uom, speed));
 
                 Thread.Sleep(ZCopyConfiguration.RefreshInterval);
             }

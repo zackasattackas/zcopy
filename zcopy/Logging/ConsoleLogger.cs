@@ -1,13 +1,13 @@
-﻿using BananaHomie.ZCopy.Internal;
+﻿using BananaHomie.ZCopy.AnsiConsole;
+using BananaHomie.ZCopy.AnsiConsole.Extensions;
+using BananaHomie.ZCopy.FileOperations;
+using BananaHomie.ZCopy.Internal;
+using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using BananaHomie.ZCopy.AnsiConsole;
-using BananaHomie.ZCopy.AnsiConsole.Extensions;
-using BananaHomie.ZCopy.FileOperations;
-using McMaster.Extensions.CommandLineUtils;
 
 namespace BananaHomie.ZCopy.Logging
 {
@@ -16,7 +16,6 @@ namespace BananaHomie.ZCopy.Logging
         #region Fields
 
         private readonly Mutex handlerControl;
-        private readonly object sync;
         private string OutputFormat = "{0,-50} {1,10} {2,10} {3,4} {4,12} {5,10} {6,10}";
         private string currentFile;
         private string currentDir;
@@ -28,7 +27,6 @@ namespace BananaHomie.ZCopy.Logging
         private bool targetVerificationComplete;
         private bool verificationResult;
         private int currentCursorTop;
-        private readonly CopySpeedUomTypes copySpeedUom;
         private MD5Verification verification;
 
         #endregion
@@ -44,8 +42,6 @@ namespace BananaHomie.ZCopy.Logging
         public ConsoleLogger(CopySpeedUomTypes uom = CopySpeedUomTypes.Megabits)
         {
             handlerControl = new Mutex();
-            sync = new object();
-            copySpeedUom = uom;
         }
 
         #endregion
@@ -76,7 +72,7 @@ namespace BananaHomie.ZCopy.Logging
                 OutputFormat += " {7}";
             }
 
-            Console.Out.WriteLine(OutputFormat, "File", "Size", "Copied", "Prog", "Speed", "Eta", "Elapsed", showVerificationStatus ? "MD5" : null);
+            ZCopyOutput.Print(OutputFormat, "File", "Size", "Copied", "Prog", "Speed", "Eta", "Elapsed", showVerificationStatus ? "MD5" : null);
             copyTimer = new Stopwatch();
             hashTimer = new Stopwatch();
         }
@@ -102,7 +98,7 @@ namespace BananaHomie.ZCopy.Logging
             if (currentDir != dir)
             {
                 currentDir = dir;
-                Console.Out.WriteLine($"\r\n\r\n    Directory: {currentDir}");
+                ZCopyOutput.Print($"\r\n\r\n    Directory: {currentDir}");
             }
 
             Console.SetCursorPosition(0, currentCursorTop = cursorTop + 1);
@@ -112,10 +108,7 @@ namespace BananaHomie.ZCopy.Logging
 
         private void FileOperationOnError(object sender, FileOperationErrorEventArgs e)
         {
-            handlerControl.WaitOne();
-            lock (sync)
-                Console.Error.WriteLine((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n').ColorText(EscapeCodes.ForegroundRed));
-            handlerControl.ReleaseMutex();
+            ZCopyOutput.PrintError((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n'));
         }
 
         //private void FileOperationOnOperationCompleted(object sender, FileOperationCompletedEventArgs e)
@@ -136,7 +129,7 @@ namespace BananaHomie.ZCopy.Logging
             var speed = Helpers.GetCopySpeed(e.BytesCopied, speedBase, copyTimer.Elapsed - hashTimer.Elapsed);
             var elapsed = copyTimer.ElapsedMilliseconds < 1000 ? "<1s" : copyTimer.Elapsed.ToString("hh\\hmm\\mss\\s");
 
-            Print(string.Format(OutputFormat,
+            ZCopyOutput.Print(OutputFormat,
                 TruncateFileName(Path.GetFileName(currentFile), 50),
                 new FileSize(e.SourceFile.Length),
                 new FileSize(e.BytesCopied),
@@ -144,7 +137,7 @@ namespace BananaHomie.ZCopy.Logging
                 Helpers.CopySpeedToString(uom, speed).PadLeft(uom.Length < 3 ? 10 : 11),
                 Helpers.EtaToString(Helpers.GetTimeRemaining(e.SourceFile.Length, e.BytesCopied, speed, speedBase)),
                 elapsed,
-                VerificationStatus()?.PadRight(10)), false);
+                VerificationStatus()?.PadRight(10));
 
             Console.SetCursorPosition(0, currentCursorTop);
 
@@ -185,41 +178,21 @@ namespace BananaHomie.ZCopy.Logging
 
         private void FileOperationOnFileHashComputed(object sender, FileHashComputedEventArgs e)
         {
-            //handlerControl.WaitOne();
-
             if (e.FilePath == currentFile)
                 sourceVerificationComplete = true;
             else
                 targetVerificationComplete = true;
-
-            //handlerControl.ReleaseMutex();
         }
 
         private void FileOperationOnMd5VerificationStarted(object sender, EventArgs e)
         {
-            //handlerControl.WaitOne();
             hashTimer.Restart();
-            //handlerControl.ReleaseMutex();
         }
 
         private void FileOperationOnMd5VerificationFinished(object sender, MD5VerificationFinishedEventArgs e)
         {
-            //handlerControl.WaitOne();
             hashTimer.Stop();
             verificationResult = e.Successful;
-            //handlerControl.ReleaseMutex();
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private void Print(string message, bool newLine = true)
-        {
-            if (newLine)
-                message += "\r\n";
-
-            lock (sync) Console.Out.Write(message);
         }
 
         #endregion

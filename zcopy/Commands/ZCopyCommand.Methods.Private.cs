@@ -48,22 +48,25 @@ namespace BananaHomie.ZCopy.Commands
         public static void PrintHeader(CommandLineApplication app, FileOperation operation)
         {
             var zcopyMetadata = typeof(ZCopyCommand).GetCustomAttribute<CommandAttribute>();
-            Console.Out.WriteLine($"\r\n{GetVersion()}\r\n");
-            Console.Out.WriteLine($"{zcopyMetadata.Name} - {zcopyMetadata.Description}\r\n");
-            Console.Out.WriteLine($"Started {(ZCopyConfiguration.UseUtc ? DateTime.UtcNow : DateTime.Now).ToString("dddd, MMM dd yyyy hh:mm tt" + (ZCopyConfiguration.UseUtc ? "" : " (zzzz)"))}\r\n");
+            ZCopyOutput.Print($"\r\n{GetVersion()}\r\n");
+            ZCopyOutput.Print($"{zcopyMetadata.Name} - {zcopyMetadata.Description}\r\n");
+            ZCopyOutput.Print($"Started {(ZCopyConfiguration.UseUtc ? DateTime.UtcNow : DateTime.Now).ToString("dddd, MMM dd yyyy hh:mm tt" + (ZCopyConfiguration.UseUtc ? "" : " (zzzz)"))}\r\n");
 
-            const string fmt = " {0} {1}";
+            const string fmt = " {0} {1}\r\n";
 
-            Console.Out.WriteLine(fmt, FormatHeader("Source"), operation.Source.FullName);
-            Console.Out.WriteLine(fmt, FormatHeader("Destination"), operation.Destination.FullName);
-            Console.Out.WriteLine(fmt, FormatHeader("Files"), app.Arguments[2].Values.Any() ? string.Join(", ",  app.Arguments[2].Values) : "*.*");
-            Console.Out.WriteLine(fmt, FormatHeader("Options"), GetUserOptions());
-            Console.Out.WriteLine();
+            ZCopyOutput.Print(fmt, FormatHeader("Source"), operation.Source.FullName);
+            ZCopyOutput.Print(fmt, FormatHeader("Destination"), operation.Destination.FullName);
+            ZCopyOutput.Print(fmt, FormatHeader("Files"), app.Arguments[2].Values.Any() ? string.Join(", ",  app.Arguments[2].Values) : "*.*");
+            ZCopyOutput.Print(fmt, FormatHeader("Options"), GetUserOptions());
+            ZCopyOutput.Print();
+
+            #region Local functions
 
             string FormatHeader(string value)
             {
                 return value.PadLeft(12).ColorText(EscapeCodes.ForegroundCyan);
             }
+
             string GetUserOptions()
             {
                 var args = Environment.GetCommandLineArgs();
@@ -79,6 +82,8 @@ namespace BananaHomie.ZCopy.Commands
 
                 return userOptBldr.ToString();
             }
+
+            #endregion
         }
 
         public static void PrintFooter(FileOperation operation)
@@ -97,10 +102,10 @@ namespace BananaHomie.ZCopy.Commands
             var (speedbase, uom) = Helpers.GetCopySpeedBase(ZCopyConfiguration.CopySpeedUom);
             var speed = Helpers.GetCopySpeed(stats.BytesTransferred, speedbase, elapsed);
 
-            Console.Out.WriteLine($"{elapsed.ToString(elapsedFmt)} elapsed | " +
+            ZCopyOutput.Print($"{elapsed.ToString(elapsedFmt)} elapsed | " +
                                   $"{stats.TotalFiles} file(s) ({transferred}) {(operation is FileMove ? "moved" : "copied")} | " +
                                   $"{Helpers.CopySpeedToString(uom, speed)} (avg)");
-            Console.Out.WriteLine(cancellation.IsCancellationRequested? "\r\nThe operation was cancelled" : "The operation completed successfully");
+            ZCopyOutput.Print(cancellation.IsCancellationRequested? "\r\nThe operation was cancelled" : "The operation completed successfully");
         }
 
         private List<ICopyProgressLogger> GetLoggers()

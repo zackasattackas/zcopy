@@ -153,6 +153,9 @@ namespace BananaHomie.ZCopy.Commands
         [Option("-utc", "Interpret and display date/time values in coordinated universal time", CommandOptionType.NoValue)]        
         public bool UtcTime { get; set; }
 
+        [Option("--no-ansi-console", "Disable virtual terminal escape seqeuences", CommandOptionType.NoValue)]
+        public bool DisableAnsiConsole { get; set; }
+
         #endregion
 
         #endregion

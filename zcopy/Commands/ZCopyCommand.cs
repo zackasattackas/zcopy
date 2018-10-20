@@ -32,7 +32,10 @@ namespace BananaHomie.ZCopy.Commands
             ValidateArguments();
             HookCancelKeyPressEvent();
 
+            ZCopyConfiguration.UseUtc = UtcTime;
             ZCopyConfiguration.RefreshInterval = TimeSpan.FromMilliseconds(RefreshInterval);
+            if (DisableAnsiConsole)
+                ZCopyConfiguration.Environment.DisableAnsiConsole = DisableAnsiConsole;
 
             stopwatch = Stopwatch.StartNew();
             var operation = Move ? NewFileMoveOperation() : NewFileCopyOperation();
