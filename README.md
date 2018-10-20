@@ -22,47 +22,47 @@ C:\> zcopy C:\users\zack D:\MyProfileData -r -mt -da=HR!
 ### Command-line Syntax
 ```
 C:\> zcopy --help
-zcopy 0.0.250.1635
+zcopy 0.0.251.1643
 
 File copy with progress!
 
 Usage: zcopy [arguments] [options]
 
 Arguments:
-  source                      The source directory. Use '.' for the current directory
-  destination                 The destination directory. Use '.' for the current directory
-  files*                      The files to be copied
-  directories*                The subdirectories to be copied if '--recurse' is specified
+  source                       The source directory. Use '.' for the current directory
+  destination                  The destination directory. Use '.' for the current directory
+  files*                       The files to be copied
+  directories*                 The subdirectories to be copied if '--recurse' is specified
 
 Options:
-  --version                   Show version information
-  -u|--username               Username to access the source and/or destination
-  -p|--password               Password to access the source and/or destination
-  -m|--move                   Delete the source files once copied
-  -r|--recurse                Recusively scan the source directory for files to copy
-  -md5                        Compare the MD5 checksum of the copied file to the source
-  -mt|--multi-thread=<count>  Multithreaded operation. The default thread count is 8. (implies '-bo')
-  -i|--info=<TAS>             File info to retain. Allowed values are 'T=timestamps', 'A=attributes', 'S=security'
-  --retry=<count>             Retry the operation n times on failure
-  --retry-interval=<secs>     Wait n seconds before retrying
-  --regex                     Interpret search patterns as regular expressions*
-  -xf=<files*>                Files to be excluded
-  -xd=<directories*>          Subdirectories to be excluded
-  -fa=<ACEHORS>               File attributes to include/exclude. Append '!' to exclude the specified attributes
-  -da=<ACEHORS>               Directory attributes to include/exclude. Append '!' to exclude the specified attributes
-  --max-age=<datetime>        Exclude files older than 'MM-dd-yyyy HH:mm'
-  --min-age=<datetime>        Exclude files newer than 'MM-dd-yyyy HH:mm'
-  --max-size=<bytes>          Exclude files larger than n bytes
-  --min-size=<bytes>          Exclude files smaller than n bytes
-  -no|--no-output             Do not write progress messages to the console
-  -bo|--basic-output          Display basic output for improved performance
-  -cr=<ms>                    The interval in milliseconds to refresh progress information at the console
-  -uom=<uom>                  Display copy speed in uom/s
-  -nh|--no-header             Do not print the header information
-  -nf|--no-footer             Do not print the footer information
-  -utc                        Interpret and display date/time values in coordinated universal time
-  --no-ansi-console           Disable virtual terminal processing and ANSI escape sequences
-  -?|-h|--help                Show help information
+  --version                    Show version information
+  -u|--username                Username to access the source and/or destination
+  -p|--password                Password to access the source and/or destination
+  -m|--move                    Delete the source files once copied
+  -r|--recurse                 Recusively scan the source directory for files to copy
+  -md5                         Compare the MD5 checksum of the copied file to the source
+  -mt|--multi-thread=<count>   Multithreaded operation. The default thread count is 8. (implies '-bo')
+  -i|--info=<TAS>              File info to retain. Allowed values are 'T=timestamps', 'A=attributes', 'S=security'
+  -rc|--retry-count=<count>    Retry the operation n times on failure
+  -ri|--retry-interval=<secs>  Wait n seconds before retrying
+  --regex                      Interpret search patterns as regular expressions*
+  -xf=<files*>                 Files to be excluded
+  -xd=<directories*>           Subdirectories to be excluded
+  -fa=<ACEHORS>                File attributes to include/exclude. Append '!' to exclude the specified attributes
+  -da=<ACEHORS>                Directory attributes to include/exclude. Append '!' to exclude the specified attributes
+  --max-age=<datetime>         Exclude files older than 'MM-dd-yyyy HH:mm'
+  --min-age=<datetime>         Exclude files newer than 'MM-dd-yyyy HH:mm'
+  --max-size=<bytes>           Exclude files larger than n bytes
+  --min-size=<bytes>           Exclude files smaller than n bytes
+  -no|--no-output              Do not write progress messages to the console
+  -bo|--basic-output           Display basic output for improved performance
+  -cr=<ms>                     The interval in milliseconds to refresh progress information at the console
+  -uom=<uom>                   Display copy speed in uom/s
+  -nh|--no-header              Do not print the header information
+  -nf|--no-footer              Do not print the footer information
+  -utc                         Interpret and display date/time values in coordinated universal time
+  --no-ansi-console            Disable virtual terminal processing and ANSI escape sequences
+  -?|-h|--help                 Show help information
 
 *Search filters support wildcards by default. Use '--regex' to enable regular expression pattern matching
 ```
