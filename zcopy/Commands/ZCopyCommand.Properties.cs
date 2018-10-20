@@ -69,11 +69,13 @@ namespace BananaHomie.ZCopy.Commands
 
         [Option(
             "-mt|--multi-thread=<count>",
-            "Multithreaded copy. The default thread count is 8",
+            "Multithreaded operation. The default thread count is 8. (implies '--basic-output')",
             CommandOptionType.SingleOrNoValue)]
         public (bool HasValue, int? Value) ThreadCount { get; set; }
 
-        [Option("-i|--info=<TAS>", "File info to copy. Allowed values are 'T=timestamps', 'A=attributes', 'S=security'",
+        [Option(
+            "-i|--info=<TAS>", 
+            "File info to retain. Allowed values are 'T=timestamps', 'A=attributes', 'S=security'",
             CommandOptionType.SingleValue)]
         public string WhatToCopy { get; set; } = "TAS";
 
@@ -101,11 +103,15 @@ namespace BananaHomie.ZCopy.Commands
         [Option("-xd=<directories*>", "Subdirectories to be excluded", CommandOptionType.SingleValue)]
         public string ExcludedDirectories { get; set; }
 
-        [Option("-fa=<ACEHORS>", "File attributes to include/exclude. Append '!' to exclude the specified filters",
+        [Option(
+            "-fa=<ACEHORS>", 
+            "File attributes to include/exclude. Append '!' to exclude the specified attributes",
             CommandOptionType.SingleValue)]
         public string FileAttributeFilter { get; set; }
 
-        [Option("-da=<ACEHORS>", "Directory attributes to include/exclude. Append '!' to exclude the specified filters",
+        [Option(
+            "-da=<ACEHORS>", 
+            "Directory attributes to include/exclude. Append '!' to exclude the specified attributes",
             CommandOptionType.SingleValue)]
         public string DirectoryAttributeFilter { get; set; }
 
