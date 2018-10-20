@@ -98,7 +98,6 @@ namespace BananaHomie.ZCopy.Logging
             var progressFormat = new StringBuilder()
                 .SavePosition()
                 .Append("{0:N0} files(s) found | ")
-                //.Append("{1:N0} active thread(s) | ")
                 .Append($"{{1,-4}} {(isCopy ? "copied" : "moved")} | ")
                 .Append("{2,-6} (avg.)" + EscapeCodes.EraseCharacters(10))
                 .RestorePosition()

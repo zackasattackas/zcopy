@@ -56,7 +56,7 @@ namespace BananaHomie.ZCopy.Logging
         {
             fileOperation.OperationStarted += FileOperationOnOperationStarted;
             fileOperation.ChunkFinished += FileOperationOnChunkFinished;
-            fileOperation.OperationCompleted += FileOperationOnOperationCompleted;
+            //fileOperation.OperationCompleted += FileOperationOnOperationCompleted;
             fileOperation.Error += FileOperationOnError;
 
             verification = fileOperation.Handlers.OfType<MD5Verification>().SingleOrDefault();
@@ -114,15 +114,14 @@ namespace BananaHomie.ZCopy.Logging
         {
             handlerControl.WaitOne();
             lock (sync)
-                Utilities.Print((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n'),
-                    color: ConsoleColor.Red, newLine: false);
+                Console.Error.WriteLine((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n').ColorText(EscapeCodes.ForegroundRed));
             handlerControl.ReleaseMutex();
         }
 
-        private void FileOperationOnOperationCompleted(object sender, FileOperationCompletedEventArgs e)
-        {
-            // Not used currently
-        }
+        //private void FileOperationOnOperationCompleted(object sender, FileOperationCompletedEventArgs e)
+        //{
+        //    // Not used currently
+        //}
 
         private void FileOperationOnChunkFinished(object sender, FileOperationProgressEventArgs e)
         {
