@@ -82,7 +82,7 @@ namespace BananaHomie.ZCopy.FileOperations
         #region Public methods
 
         public abstract void Invoke(CancellationToken cancellationToken = default);
-
+    
         public void Dispose()
         {
             Dispose(true);

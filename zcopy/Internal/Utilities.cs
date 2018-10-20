@@ -83,26 +83,14 @@ namespace BananaHomie.ZCopy.Internal
                 }
             }
 
-            destination.Refresh();
-
             if (cancellationToken.IsCancellationRequested)
             {
                 destination.Delete();
                 cancellationToken.ThrowIfCancellationRequested();
             }
 
-            if (whatToCopy == WhatToCopy.None || whatToCopy == WhatToCopy.Data)
-                return;
-            if (whatToCopy.HasFlag(WhatToCopy.Timestamps))
-            {
-                destination.CreationTime = source.CreationTime;
-                destination.LastAccessTime = source.LastAccessTime;
-                destination.LastWriteTime = source.LastWriteTime;
-            }
-            if (whatToCopy.HasFlag(WhatToCopy.Attributes))
-                destination.Attributes = source.Attributes;
-            if (whatToCopy.HasFlag(WhatToCopy.Security))
-                destination.SetAccessControl(source.GetAccessControl());
+            SetFileInfo(source, destination, whatToCopy);       
+            IntegrityCheck(source, destination, whatToCopy);
         }
 
         public static void Print(string value, bool newLine = true, ConsoleColor? color = null)
@@ -121,6 +109,31 @@ namespace BananaHomie.ZCopy.Internal
 
             if (color.HasValue)
                 Console.ForegroundColor = current;
+        }
+
+        private static void SetFileInfo(FileInfo source, FileInfo destination, WhatToCopy whatToCopy)
+        {
+            if (whatToCopy == WhatToCopy.None || whatToCopy == WhatToCopy.Data)
+                return;
+            if (whatToCopy.HasFlag(WhatToCopy.Timestamps))
+            {
+                destination.CreationTime = source.CreationTime;
+                destination.LastAccessTime = source.LastAccessTime;
+                destination.LastWriteTime = source.LastWriteTime;
+            }
+            if (whatToCopy.HasFlag(WhatToCopy.Attributes))
+                destination.Attributes = source.Attributes;
+            if (whatToCopy.HasFlag(WhatToCopy.Security))
+                destination.SetAccessControl(source.GetAccessControl());
+        }
+
+        private static void IntegrityCheck(FileInfo source, FileInfo destination, WhatToCopy whatToCompare)
+        {
+            destination.Refresh();
+            source.Refresh();
+
+            if (!Helpers.Equals(source, destination, whatToCompare))
+                throw new ZCopyException($"The file {destination.FullName} failed an integrity check.");
         }
     }
 }

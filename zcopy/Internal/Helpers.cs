@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using BananaHomie.ZCopy.FileOperations;
 using BananaHomie.ZCopy.Logging;
@@ -59,6 +60,41 @@ namespace BananaHomie.ZCopy.Internal
         public static string EtaToString(TimeSpan eta)
         {
             return eta.TotalMilliseconds < 1000 ? "<1s" : eta.ToString("hh\\hmm\\mss\\s");
+        }
+
+        public static bool Equals(FileInfo x, FileInfo y, WhatToCopy whatToCompare)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            if (ReferenceEquals(x, y))
+                return true;
+            if (x.Length != y.Length)
+                return false;
+            if (x.Name != y.Name)
+                return false;
+            if (x.Extension != y.Extension)
+                return false;
+            if (whatToCompare.HasFlag(WhatToCopy.Attributes))
+            {
+                if (x.Attributes != y.Attributes)
+                    return false;
+            }
+            if (whatToCompare.HasFlag(WhatToCopy.Timestamps))
+            {
+                if (x.CreationTime != y.CreationTime)
+                    return false;
+                if (x.LastWriteTime != y.LastWriteTime)
+                    return false;
+            }
+            if (whatToCompare.HasFlag(WhatToCopy.Security))
+            {
+                if (!x.GetAccessControl().Equals(y.GetAccessControl()))
+                    return false;
+            }
+
+            return true;
         }
     }
 }
