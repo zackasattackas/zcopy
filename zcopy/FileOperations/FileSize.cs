@@ -78,7 +78,7 @@ namespace BananaHomie.ZCopy.FileOperations
                 unit = "B";
             }
 
-            return $"{value:N1} {unit,2}";
+            return $"{value:N1} {unit.PadLeft(unit.Length)}";
         }
     }
 }

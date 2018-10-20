@@ -106,9 +106,6 @@ namespace BananaHomie.ZCopy.FileOperations
             {
                 OnError(this, new FileOperationErrorEventArgs(e));
             }
-
-            Statistics.TotalFiles++;
-            Statistics.BytesTransferred += file.Length;
         }
 
         internal override string GetOptionsString()
@@ -129,6 +126,8 @@ namespace BananaHomie.ZCopy.FileOperations
                 try
                 {
                     Utilities.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                    Statistics.TotalFiles++;
+                    Statistics.BytesTransferred += target.Length;
                     break;
                 }
                 catch (OperationCanceledException)
