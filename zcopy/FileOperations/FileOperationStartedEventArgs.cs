@@ -1,6 +1,8 @@
-﻿namespace BananaHomie.ZCopy.FileOperations
+﻿using System;
+
+namespace BananaHomie.ZCopy.FileOperations
 {
-    public class FileOperationStartedEventArgs
+    public class FileOperationStartedEventArgs : EventArgs
     {
         public FileOperationStartedEventArgs(string fullPath)
         {
