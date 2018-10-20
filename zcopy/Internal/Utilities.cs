@@ -1,11 +1,11 @@
-﻿using BananaHomie.ZCopy.IO;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
+using BananaHomie.ZCopy.FileOperations;
 
 namespace BananaHomie.ZCopy.Internal
 {

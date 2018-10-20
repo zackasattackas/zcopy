@@ -1,5 +1,4 @@
 ﻿using BananaHomie.ZCopy.Internal;
-using BananaHomie.ZCopy.IO;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using BananaHomie.ZCopy.AnsiConsole;
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
+using BananaHomie.ZCopy.FileOperations;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace BananaHomie.ZCopy.Logging

@@ -1,9 +1,10 @@
 ﻿using BananaHomie.ZCopy.Commands;
-using BananaHomie.ZCopy.IO;
 using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.IO;
 using System.Linq;
+using BananaHomie.ZCopy.FileOperations;
+
 // ReSharper disable InconsistentNaming
 
 namespace BananaHomie.ZCopy.Logging

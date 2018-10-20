@@ -1,8 +1,8 @@
 ﻿using BananaHomie.ZCopy.Commands;
-using BananaHomie.ZCopy.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using BananaHomie.ZCopy.FileSystemSearch;
 
 namespace BananaHomie.ZCopy.Internal.Extensions
 {

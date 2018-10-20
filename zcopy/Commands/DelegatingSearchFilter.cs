@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using BananaHomie.ZCopy.IO;
+using BananaHomie.ZCopy.FileSystemSearch;
 
 namespace BananaHomie.ZCopy.Commands
 {

@@ -1,4 +1,4 @@
-﻿using BananaHomie.ZCopy.IO;
+﻿using BananaHomie.ZCopy.FileOperations;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace BananaHomie.ZCopy.Logging

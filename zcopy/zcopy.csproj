@@ -74,35 +74,35 @@
     <Compile Include="Internal\ProgressCallback.cs" />
     <Compile Include="Internal\ZCopyConfiguration.cs" />
     <Compile Include="Internal\ZCopyEnvironment.cs" />
-    <Compile Include="IO\DirectoryFoundEventArgs.cs" />
-    <Compile Include="IO\FileAgeFilter.cs" />
-    <Compile Include="IO\FileAttributeFilter.cs" />
-    <Compile Include="IO\FileCopyStats.cs" />
-    <Compile Include="IO\FileFoundEventArgs.cs" />
-    <Compile Include="IO\FileHashComputedEventArgs.cs" />
-    <Compile Include="IO\FileNameFilter.cs" />
-    <Compile Include="IO\FileOperationCompletedEventArgs.cs" />
-    <Compile Include="IO\FileOperationErrorEventArgs.cs" />
-    <Compile Include="IO\FileOperationStartedEventArgs.cs" />
-    <Compile Include="IO\FileSize.cs" />
-    <Compile Include="IO\FileSystemItemFoundEventArgs.cs" />
-    <Compile Include="IO\FileSystemSearchErrorEventArgs.cs" />
-    <Compile Include="IO\IFileOperationHandler.cs" />
-    <Compile Include="IO\MD5Verification.cs" />
-    <Compile Include="IO\MinFileSizeFilter.cs" />
-    <Compile Include="IO\Threading\MultiThreadedFileCopy.cs" />
-    <Compile Include="IO\Threading\MultiThreadedFileMove.cs" />
-    <Compile Include="IO\Threading\MultiThreadedFileOperation.cs" />
-    <Compile Include="IO\Threading\MultiThreadedFileOperationState.cs" />
-    <Compile Include="IO\WhatToCopy.cs" />
-    <Compile Include="IO\FileSystemSearch.cs" />
-    <Compile Include="IO\MaxFileSizeFilter.cs" />
-    <Compile Include="IO\MD5VerificationFinishedEventArgs.cs" />
-    <Compile Include="IO\MD5VerificationStartedEventArgs.cs" />
-    <Compile Include="IO\MoveOptions.cs" />
-    <Compile Include="IO\ISearchFilter.cs" />
+    <Compile Include="FileSystemSearch\DirectoryFoundEventArgs.cs" />
+    <Compile Include="FileSystemSearch\FileAgeFilter.cs" />
+    <Compile Include="FileSystemSearch\FileAttributeFilter.cs" />
+    <Compile Include="FileOperations\FileCopyStats.cs" />
+    <Compile Include="FileSystemSearch\FileFoundEventArgs.cs" />
+    <Compile Include="FileOperations\FileHashComputedEventArgs.cs" />
+    <Compile Include="FileSystemSearch\FileNameFilter.cs" />
+    <Compile Include="FileOperations\FileOperationCompletedEventArgs.cs" />
+    <Compile Include="FileOperations\FileOperationErrorEventArgs.cs" />
+    <Compile Include="FileOperations\FileOperationStartedEventArgs.cs" />
+    <Compile Include="FileOperations\FileSize.cs" />
+    <Compile Include="FileSystemSearch\FileSystemItemFoundEventArgs.cs" />
+    <Compile Include="FileSystemSearch\FileSystemSearchErrorEventArgs.cs" />
+    <Compile Include="FileOperations\IFileOperationHandler.cs" />
+    <Compile Include="FileOperations\MD5Verification.cs" />
+    <Compile Include="FileSystemSearch\MinFileSizeFilter.cs" />
+    <Compile Include="Threading\MultiThreadedFileCopy.cs" />
+    <Compile Include="Threading\MultiThreadedFileMove.cs" />
+    <Compile Include="Threading\MultiThreadedFileOperation.cs" />
+    <Compile Include="Threading\MultiThreadedFileOperationState.cs" />
+    <Compile Include="FileOperations\WhatToCopy.cs" />
+    <Compile Include="FileSystemSearch\FileSystemSearch.cs" />
+    <Compile Include="FileSystemSearch\MaxFileSizeFilter.cs" />
+    <Compile Include="FileOperations\MD5VerificationFinishedEventArgs.cs" />
+    <Compile Include="FileOperations\MD5VerificationStartedEventArgs.cs" />
+    <Compile Include="FileOperations\MoveOptions.cs" />
+    <Compile Include="FileSystemSearch\ISearchFilter.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
-    <Compile Include="IO\CopyOptions.cs" />
+    <Compile Include="FileOperations\CopyOptions.cs" />
     <Compile Include="Logging\CopySpeedUomTypes.cs" />
     <Compile Include="Logging\EventLogger.cs" />
     <Compile Include="Logging\FileLogger.cs" />
@@ -111,10 +111,10 @@
     <Compile Include="Internal\NativeMethods.cs" />
     <Compile Include="Internal\SafeTokenHandle.cs" />
     <Compile Include="Internal\Utilities.cs" />
-    <Compile Include="IO\FileOperationProgressEventArgs.cs" />
-    <Compile Include="IO\FileCopy.cs" />
-    <Compile Include="IO\FileMove.cs" />
-    <Compile Include="IO\FileOperation.cs" />
+    <Compile Include="FileOperations\FileOperationProgressEventArgs.cs" />
+    <Compile Include="FileOperations\FileCopy.cs" />
+    <Compile Include="FileOperations\FileMove.cs" />
+    <Compile Include="FileOperations\FileOperation.cs" />
     <Compile Include="Logging\MultiThreadedConsoleLogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -124,10 +124,13 @@
     <Compile Include="Commands\ZCopyCommand.Properties.cs" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cryptography\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
+      <UserProperties BuildVersion_AssemblyInfoFilename="" BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

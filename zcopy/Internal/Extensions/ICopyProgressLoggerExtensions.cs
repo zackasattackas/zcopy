@@ -1,6 +1,6 @@
-﻿using BananaHomie.ZCopy.IO;
-using BananaHomie.ZCopy.Logging;
+﻿using BananaHomie.ZCopy.Logging;
 using System.Collections.Generic;
+using BananaHomie.ZCopy.FileOperations;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace BananaHomie.ZCopy.Internal.Extensions

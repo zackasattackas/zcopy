@@ -1,13 +1,13 @@
 ﻿using BananaHomie.ZCopy.AnsiConsole;
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
 using BananaHomie.ZCopy.Internal;
-using BananaHomie.ZCopy.IO;
-using BananaHomie.ZCopy.IO.Threading;
 using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using BananaHomie.ZCopy.FileOperations;
+using BananaHomie.ZCopy.Threading;
 
 namespace BananaHomie.ZCopy.Logging
 {

@@ -2,7 +2,6 @@
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
 using BananaHomie.ZCopy.Internal;
 using BananaHomie.ZCopy.Internal.Extensions;
-using BananaHomie.ZCopy.IO;
 using BananaHomie.ZCopy.Logging;
 using McMaster.Extensions.CommandLineUtils;
 using System;
@@ -12,6 +11,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using BananaHomie.ZCopy.FileOperations;
+using BananaHomie.ZCopy.FileSystemSearch;
 
 namespace BananaHomie.ZCopy.Commands
 {
@@ -172,7 +173,7 @@ namespace BananaHomie.ZCopy.Commands
 
         private WhatToCopy GetWhatToCopy()
         {
-            var flags = IO.WhatToCopy.Data;
+            var flags = FileOperations.WhatToCopy.Data;
 
             if (WhatToCopy == null)
                 return flags;
@@ -181,13 +182,13 @@ namespace BananaHomie.ZCopy.Commands
                 switch (c)
                 {
                     case 'T':
-                        flags |= IO.WhatToCopy.Timestamps;
+                        flags |= FileOperations.WhatToCopy.Timestamps;
                         break;
                     case 'A':
-                        flags |= IO.WhatToCopy.Attributes;
+                        flags |= FileOperations.WhatToCopy.Attributes;
                         break;
                     case 'S':
-                        flags |= IO.WhatToCopy.Security;
+                        flags |= FileOperations.WhatToCopy.Security;
                         break;
                     default:
                         throw new ArgumentException(

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using BananaHomie.ZCopy.IO;
+using BananaHomie.ZCopy.FileOperations;
 using BananaHomie.ZCopy.Logging;
 
 namespace BananaHomie.ZCopy.Internal
