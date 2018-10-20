@@ -125,10 +125,10 @@ namespace BananaHomie.ZCopy.Commands
 
         #region Console output options
 
-        [Option("-nc", "Do not write progress messages to the console", CommandOptionType.NoValue)]
+        [Option("-no|--no-output", "Do not write progress messages to the console", CommandOptionType.NoValue)]
         public bool NoConsoleOutput { get; set; }
 
-        [Option("-bc", "Display basic output for improved performance", CommandOptionType.NoValue)]
+        [Option("-bo|--basic-output", "Display basic output for improved performance", CommandOptionType.NoValue)]
         public bool BasicConsoleOutput { get; set; }
 
         [Option("-cr=<ms>", "The interval in milliseconds to refresh progress information at the console", CommandOptionType.SingleValue)]
