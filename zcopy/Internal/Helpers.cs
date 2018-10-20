@@ -54,7 +54,7 @@ namespace BananaHomie.ZCopy.Internal
         public static TimeSpan GetTimeRemaining(long totalSize, long bytesCopied, double speed, double baseValue)
         {
             var seconds = ((double) totalSize - bytesCopied) / baseValue / speed;
-            return TimeSpan.FromSeconds(double.IsNaN(seconds) ? 0 : seconds);
+            return TimeSpan.FromSeconds(Double.IsNaN(seconds) ? 0 : seconds);
         }
 
         public static string EtaToString(TimeSpan eta)
@@ -62,39 +62,22 @@ namespace BananaHomie.ZCopy.Internal
             return eta.TotalMilliseconds < 1000 ? "<1s" : eta.ToString("hh\\hmm\\mss\\s");
         }
 
-        public static bool Equals(FileInfo x, FileInfo y, WhatToCopy whatToCompare)
+        public static void Print(string value, bool newLine = true, ConsoleColor? color = null)
         {
-            if (x == null && y == null)
-                return true;
-            if (x == null || y == null)
-                return false;
-            if (ReferenceEquals(x, y))
-                return true;
-            if (x.Length != y.Length)
-                return false;
-            if (x.Name != y.Name)
-                return false;
-            if (x.Extension != y.Extension)
-                return false;
-            if (whatToCompare.HasFlag(WhatToCopy.Attributes))
+            ConsoleColor current = default;
+            if (color.HasValue)
             {
-                if (x.Attributes != y.Attributes)
-                    return false;
-            }
-            if (whatToCompare.HasFlag(WhatToCopy.Timestamps))
-            {
-                if (x.CreationTime != y.CreationTime)
-                    return false;
-                if (x.LastWriteTime != y.LastWriteTime)
-                    return false;
-            }
-            if (whatToCompare.HasFlag(WhatToCopy.Security))
-            {
-                if (!x.GetAccessControl().Equals(y.GetAccessControl()))
-                    return false;
+                current = Console.ForegroundColor;
+                Console.ForegroundColor = color.Value;
             }
 
-            return true;
+            if (newLine)
+                value += Environment.NewLine;
+
+            Console.Out.Write(value);
+
+            if (color.HasValue)
+                Console.ForegroundColor = current;
         }
     }
 }

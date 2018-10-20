@@ -77,7 +77,7 @@ namespace BananaHomie.ZCopy.Commands
             "-i|--info=<TAS>", 
             "File info to retain. Allowed values are 'T=timestamps', 'A=attributes', 'S=security'",
             CommandOptionType.SingleValue)]
-        public string WhatToCopy { get; set; } = "TAS";
+        public string WhatToCopy { get; set; } = "TA";
 
         [Option("-rc|--retry-count=<count>", "Retry the operation n times on failure", CommandOptionType.SingleValue)]
         public int RetryCount { get; set; }
@@ -102,6 +102,9 @@ namespace BananaHomie.ZCopy.Commands
 
         [Option("--regex", "Interpret search patterns as regular expressions*", CommandOptionType.NoValue)]
         public bool UseRegex { get; set; }
+
+        [Option("-s|--system", "Include files/directories with the System attribute", CommandOptionType.NoValue)]
+        public bool IncludeSystem { get; set; }
 
         [Option("-xf=<files*>", "Files to be excluded", CommandOptionType.SingleValue)]
         public string ExcludedFiles { get; set; }

@@ -48,7 +48,7 @@ namespace BananaHomie.ZCopy.FileOperations
             {
                 impersonationContext?.Undo();
                 impersonationContext?.Dispose();
-                impersonationContext = Utilities.ImpersonateUser(value);
+                impersonationContext = Impersonation.ImpersonateUser(value);
                 credentials = value;
             }
         }

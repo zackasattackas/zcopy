@@ -54,7 +54,7 @@ namespace BananaHomie.ZCopy
                 ZCopyOutput.PrintError(ex.Message + " " + ex.InnerException?.Message);
 
             void PrintException(Exception ex) =>
-                Utilities.Print(ex.Message + " " + ex.InnerException?.Message, color: ConsoleColor.Red);
+                Helpers.Print(ex.Message + " " + ex.InnerException?.Message, color: ConsoleColor.Red);
 
             #endregion
         }

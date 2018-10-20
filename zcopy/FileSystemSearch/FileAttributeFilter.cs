@@ -8,36 +8,46 @@ namespace BananaHomie.ZCopy.FileSystemSearch
         public FileAttributes Attributes { get; }
         public bool Exclude { get; }
 
-        public FileAttributeFilter(IEnumerable<char> values)
+        public FileAttributeFilter(FileAttributes attributes, bool exclude)
         {
+            Attributes = attributes;
+            Exclude = exclude;
+        }
+
+        public static FileAttributeFilter Parse(IEnumerable<char> values)
+        {
+            FileAttributes attributes = 0;
+            bool exclude = default;
             foreach (var value in values)
                 switch (value)
                 {
                     case 'A':
-                        Attributes |= FileAttributes.Archive;
+                        attributes |= FileAttributes.Archive;
                         break;
                     case 'C':
-                        Attributes |= FileAttributes.Compressed;
+                        attributes |= FileAttributes.Compressed;
                         break;
                     case 'E':
-                        Attributes |= FileAttributes.Encrypted;
+                        attributes |= FileAttributes.Encrypted;
                         break;
                     case 'H':
-                        Attributes |= FileAttributes.Hidden;
+                        attributes |= FileAttributes.Hidden;
                         break;
                     case 'O':
-                        Attributes |= FileAttributes.Offline;
+                        attributes |= FileAttributes.Offline;
                         break;
                     case 'R':
-                        Attributes |= FileAttributes.ReparsePoint;
+                        attributes |= FileAttributes.ReparsePoint;
                         break;
                     case 'S':
-                        Attributes |= FileAttributes.System;
+                        attributes |= FileAttributes.System;
                         break;
                     case '!':
-                        Exclude = true;
+                        exclude = true;
                         break;
                 }
+
+            return new FileAttributeFilter(attributes, exclude);
         }
 
         public bool IsMatch(FileSystemInfo item)

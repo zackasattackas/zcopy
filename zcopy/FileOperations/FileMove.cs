@@ -40,11 +40,11 @@ namespace BananaHomie.ZCopy.FileOperations
         private void SearchOnFileFound(object sender, FileFoundEventArgs args)
         {
             var file = args.Item;
-            var target = Utilities.GetDestinationFile(Source, file, Destination);
+            var target = FileUtils.GetDestinationFile(Source, file, Destination);
 
             try
             {
-                Utilities.MoveFile(file, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                FileUtils.MoveFile(file, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
             }
             catch (Exception e)
             {

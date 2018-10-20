@@ -198,16 +198,22 @@ namespace BananaHomie.ZCopy.Logging
 
         private void FileOperationOnRetryStarted(object sender, FileOperationRetryStartedEventArgs e)
         {
-            var timer = Stopwatch.StartNew();
-            var format = $"{EscapeCodes.SavePosition()}{{0}}{EscapeCodes.RestorePosition()}";
+            // Using a ThreadPool thread so that the caller is not blocked
+            ThreadPool.QueueUserWorkItem(RetryIntervalProgressProc);
 
-            ZCopyOutput.PrintError(e.Reason.Message + " " + e.Reason.InnerException?.Message, false);
+            void RetryIntervalProgressProc(object state)
+            {
+                var timer = Stopwatch.StartNew();
+                var format = $"{EscapeCodes.SavePosition()}{{0}}{EscapeCodes.RestorePosition()}";
 
-            while (timer.ElapsedMilliseconds < e.RetryInterval.TotalMilliseconds)
-                ZCopyOutput.Print(format,$"Retrying in {e.RetryInterval - timer.Elapsed:mm\\mss\\s}");
+                ZCopyOutput.PrintError(e.Reason.Message + " " + e.Reason.InnerException?.Message, false);
 
-            timer.Stop();
-            ZCopyOutput.Print();
+                while (timer.ElapsedMilliseconds < e.RetryInterval.TotalMilliseconds)
+                    ZCopyOutput.Print(format, $"Retrying in {e.RetryInterval - timer.Elapsed:mm\\mss\\s}");
+
+                timer.Stop();
+                ZCopyOutput.Print();
+            }
         }
 
         #endregion

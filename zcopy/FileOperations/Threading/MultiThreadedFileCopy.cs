@@ -88,7 +88,7 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
             if (cancellation.IsCancellationRequested)
                 return;
 
-            var target = Utilities.GetDestinationFile(Source, file, Destination);            
+            var target = FileUtils.GetDestinationFile(Source, file, Destination);            
 
             // Block so we don't queue too many files at once.
             while (queue.Count > MaxThreads * 5 && !cancellation.IsCancellationRequested)
@@ -121,7 +121,7 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
 
                     PreOperationHandlers(source, target);
 
-                    Utilities.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                    FileUtils.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
 
                     if (cancellation.IsCancellationRequested)
                         break;

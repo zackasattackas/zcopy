@@ -215,7 +215,7 @@ namespace BananaHomie.ZCopy.Commands
             if (ExcludedFiles != null)
                 filters.Add(new FileNameFilter(UseRegex, ParseFilters(ExcludedFiles), true));
             if (FileAttributeFilter != null)
-                filters.Add(new FileAttributeFilter(FileAttributeFilter.ToCharArray()));
+                filters.Add(FileSystemSearch.FileAttributeFilter.Parse(FileAttributeFilter.ToCharArray()));
             if (MaxFileAge != null)
                 filters.Add(new FileAgeFilter(MaxFileAge, UtcTime, true));
             if (MinFileAge != null)
@@ -224,6 +224,8 @@ namespace BananaHomie.ZCopy.Commands
                 filters.Add(new MaxFileSizeFilter(MaxFileSize));
             if (MinFileSize > 0)
                 filters.Add(new MinFileSizeFilter(MinFileSize));
+            if (!IncludeSystem && !filters.Any(f => f is FileAttributeFilter af && (af.Attributes & FileAttributes.System) > 0 && af.Exclude))
+                filters.Add(new FileAttributeFilter(FileAttributes.System, true));
 
             return filters;
         }
@@ -241,8 +243,9 @@ namespace BananaHomie.ZCopy.Commands
             if (ExcludedDirectories != null)
                 filters.Add(new FileNameFilter(UseRegex, ParseFilters(ExcludedDirectories), true));
             if (DirectoryAttributeFilter != null)
-                filters.Add(new FileAttributeFilter(DirectoryAttributeFilter.ToCharArray()));
-
+                filters.Add(FileSystemSearch.FileAttributeFilter.Parse(DirectoryAttributeFilter.ToCharArray()));
+            if (!IncludeSystem && !filters.Any(f => f is FileAttributeFilter af && (af.Attributes & FileAttributes.System) > 0 && af.Exclude))
+                filters.Add(new FileAttributeFilter(FileAttributes.System, true));
             return filters;
         }
 

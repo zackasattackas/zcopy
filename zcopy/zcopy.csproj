@@ -113,7 +113,7 @@
     <Compile Include="Logging\ICopyProgressLogger.cs" />
     <Compile Include="Internal\NativeMethods.cs" />
     <Compile Include="Internal\SafeTokenHandle.cs" />
-    <Compile Include="Internal\Utilities.cs" />
+    <Compile Include="Internal\FileUtils.cs" />
     <Compile Include="FileOperations\FileOperationProgressEventArgs.cs" />
     <Compile Include="FileOperations\FileCopy.cs" />
     <Compile Include="FileOperations\FileMove.cs" />

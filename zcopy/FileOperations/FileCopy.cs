@@ -35,7 +35,7 @@ namespace BananaHomie.ZCopy.FileOperations
         {
             Options = options;
 
-            if (VerifyNeeded())
+            if (Options.HasFlag(CopyOptions.VerifyMD5))
                 Handlers.Add(new MD5Verification());
         }
 
@@ -82,7 +82,7 @@ namespace BananaHomie.ZCopy.FileOperations
             var file = args.Item;
             OnOperationStarted(this, new FileOperationStartedEventArgs(file.FullName));
 
-            var target = Utilities.GetDestinationFile(Source, file, Destination);
+            var target = FileUtils.GetDestinationFile(Source, file, Destination);
 
             try
             {
@@ -100,7 +100,6 @@ namespace BananaHomie.ZCopy.FileOperations
             }
             catch (OperationCanceledException)
             {
-                return;                
             }
             catch (Exception e)
             {
@@ -113,11 +112,6 @@ namespace BananaHomie.ZCopy.FileOperations
             return Options.ToString();
         }
 
-        private bool VerifyNeeded()
-        {
-            return Options.HasFlag(CopyOptions.VerifyMD5);
-        }
-
         private void TryCopyFile(FileInfo source, FileInfo target)
         {
             var tries = 0;
@@ -125,7 +119,7 @@ namespace BananaHomie.ZCopy.FileOperations
             {                
                 try
                 {
-                    Utilities.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                    FileUtils.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
                     Statistics.TotalFiles++;
                     Statistics.BytesTransferred += target.Length;
                     break;
@@ -140,7 +134,7 @@ namespace BananaHomie.ZCopy.FileOperations
                         throw;
 
                     OnRetryStarted(this, new FileOperationRetryStartedEventArgs(RetryCount, tries, RetryInterval, e));
-                    //Thread.Sleep(RetryInterval);
+                    Thread.Sleep(RetryInterval);
                 }
             }
         }

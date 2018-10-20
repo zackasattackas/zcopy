@@ -1,25 +1,18 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
 using BananaHomie.ZCopy.FileOperations;
 
 namespace BananaHomie.ZCopy.Internal
 {
-    internal static class Utilities
+    internal static class Impersonation
     {
-        public static FileInfo GetDestinationFile(
-            DirectoryInfo sourceDirectory,
-            FileInfo sourceFile, 
-            DirectoryInfo destinationDirectory)
-        {
-            var rel = sourceFile.DirectoryName?.Replace(sourceDirectory.FullName, "").TrimStart('\\') ?? string.Empty;            
-            return new FileInfo(Path.Combine(destinationDirectory.FullName, rel , sourceFile.Name));
-        }
-
         public static WindowsImpersonationContext ImpersonateUser(NetworkCredential credentials)
         {
             if (credentials == default)
@@ -36,6 +29,17 @@ namespace BananaHomie.ZCopy.Internal
 
             using (token)
                 return WindowsIdentity.Impersonate(token.DangerousGetHandle());
+        }
+    }
+    internal static class FileUtils
+    {
+        public static FileInfo GetDestinationFile(
+            DirectoryInfo sourceDirectory,
+            FileInfo sourceFile, 
+            DirectoryInfo destinationDirectory)
+        {
+            var rel = sourceFile.DirectoryName?.Replace(sourceDirectory.FullName, "").TrimStart('\\') ?? String.Empty;            
+            return new FileInfo(Path.Combine(destinationDirectory.FullName, rel , sourceFile.Name));
         }
 
         public static void MoveFile(
@@ -93,22 +97,45 @@ namespace BananaHomie.ZCopy.Internal
             IntegrityCheck(source, destination, whatToCopy);
         }
 
-        public static void Print(string value, bool newLine = true, ConsoleColor? color = null)
+        public static bool Equals(FileInfo x, FileInfo y, WhatToCopy whatToCompare)
         {
-            ConsoleColor current = default;
-            if (color.HasValue)
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            if (ReferenceEquals(x, y))
+                return true;
+            if (x.Length != y.Length)
+                return false;
+            if (x.Name != y.Name)
+                return false;
+            if (x.Extension != y.Extension)
+                return false;
+            if (whatToCompare.HasFlag(WhatToCopy.Attributes))
             {
-                current = Console.ForegroundColor;
-                Console.ForegroundColor = color.Value;
+                if (x.Attributes != y.Attributes)
+                    return false;
             }
+            if (whatToCompare.HasFlag(WhatToCopy.Timestamps))
+            {
+                if (x.CreationTime != y.CreationTime)
+                    return false;
+                if (x.LastWriteTime != y.LastWriteTime)
+                    return false;
+            }
+            //if (whatToCompare.HasFlag(WhatToCopy.Security))
+            //{
+            //    var sourceAcl = x.GetAccessControl().GetSecurityDescriptorBinaryForm();
+            //    var targetAcl = y.GetAccessControl().GetSecurityDescriptorBinaryForm();
 
-            if (newLine)
-                value += Environment.NewLine;
+            //    for (var i = 0; i < sourceAcl.Length; i++)
+            //    {
+            //        if (sourceAcl[i] != targetAcl[i])
+            //            return false;
+            //    }
+            //}
 
-            Console.Out.Write(value);
-
-            if (color.HasValue)
-                Console.ForegroundColor = current;
+            return true;
         }
 
         private static void SetFileInfo(FileInfo source, FileInfo destination, WhatToCopy whatToCopy)
@@ -124,15 +151,18 @@ namespace BananaHomie.ZCopy.Internal
             if (whatToCopy.HasFlag(WhatToCopy.Attributes))
                 destination.Attributes = source.Attributes;
             if (whatToCopy.HasFlag(WhatToCopy.Security))
-                destination.SetAccessControl(source.GetAccessControl());
+            {
+                var fs = source.GetAccessControl();
+                fs.SetAccessRuleProtection(true, true);
+                destination.SetAccessControl(fs);
+            }
         }
 
         private static void IntegrityCheck(FileInfo source, FileInfo destination, WhatToCopy whatToCompare)
         {
             destination.Refresh();
-            source.Refresh();
 
-            if (!Helpers.Equals(source, destination, whatToCompare))
+            if (!Equals(source, destination, whatToCompare))
                 throw new ZCopyException($"The file {destination.FullName} failed an integrity check.");
         }
     }
