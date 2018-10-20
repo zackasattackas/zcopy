@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace BananaHomie.ZCopy.Threading
+namespace BananaHomie.ZCopy.FileOperations.Threading
 {
     public class MultiThreadedFileOperationState : IDisposable
     {

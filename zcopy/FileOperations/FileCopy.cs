@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using BananaHomie.ZCopy.FileOperations.Threading;
 using BananaHomie.ZCopy.FileSystemSearch;
 using BananaHomie.ZCopy.Internal;
-using BananaHomie.ZCopy.Threading;
 
 namespace BananaHomie.ZCopy.FileOperations
 {

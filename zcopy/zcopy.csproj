@@ -69,9 +69,9 @@
     <Compile Include="Internal\Extensions\ISearchFilterExtensions.cs" />
     <Compile Include="Internal\Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Internal\Extensions\StringExtensions.cs" />
-    <Compile Include="Internal\FileCopyException.cs" />
-    <Compile Include="Internal\FileHash.cs" />
-    <Compile Include="Internal\ProgressCallback.cs" />
+    <Compile Include="FileOperations\FileCopyException.cs" />
+    <Compile Include="FileOperations\FileHash.cs" />
+    <Compile Include="FileOperations\ProgressCallback.cs" />
     <Compile Include="Internal\ZCopyConfiguration.cs" />
     <Compile Include="Internal\ZCopyEnvironment.cs" />
     <Compile Include="FileSystemSearch\DirectoryFoundEventArgs.cs" />

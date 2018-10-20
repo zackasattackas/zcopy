@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BananaHomie.ZCopy.Internal
+namespace BananaHomie.ZCopy.FileOperations
 {
     internal class FileCopyException : Exception
     {

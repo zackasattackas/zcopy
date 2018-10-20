@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using BananaHomie.ZCopy.FileSystemSearch;
 
-namespace BananaHomie.ZCopy.Threading
+namespace BananaHomie.ZCopy.FileOperations.Threading
 {
     public class MultiThreadedFileMove : MultiThreadedFileOperation
     {

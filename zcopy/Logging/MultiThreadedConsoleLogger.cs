@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using BananaHomie.ZCopy.FileOperations;
-using BananaHomie.ZCopy.Threading;
+using BananaHomie.ZCopy.FileOperations.Threading;
 
 namespace BananaHomie.ZCopy.Logging
 {

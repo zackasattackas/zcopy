@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using BananaHomie.ZCopy.FileOperations;
 using BananaHomie.ZCopy.FileSystemSearch;
 
-namespace BananaHomie.ZCopy.Threading
+namespace BananaHomie.ZCopy.FileOperations.Threading
 {
     public abstract class MultiThreadedFileOperation : FileOperation
     {

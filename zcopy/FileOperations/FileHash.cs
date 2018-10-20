@@ -5,7 +5,7 @@ using System.IO;
 using System.Security.Cryptography;
 using BananaHomie.ZCopy.Internal.Extensions;
 
-namespace BananaHomie.ZCopy.Internal
+namespace BananaHomie.ZCopy.FileOperations
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class FileHash
