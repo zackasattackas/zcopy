@@ -74,7 +74,7 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
             var searchOption = Options.HasFlag(CopyOptions.Recurse) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             var search = new FileSystemSearch.FileSystemSearch(Source, FileFilters, DirectoryFilters, searchOption);
             search.FileFound += SearchOnFileFound;
-            search.Error += SearchOnError;
+            search.Error += SearchOnError;            
 
             search.Search(cancellation);
         }
@@ -98,7 +98,17 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
         }
 
         private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
-        {            
+        {
+            switch (e.Item)
+            {
+                case FileInfo _:
+                    Statistics.SkippedFiles++;
+                    break;
+                case DirectoryInfo _:
+                    Statistics.SkippedDirectories++;
+                    break;
+            }
+
             OnError(sender, new FileOperationErrorEventArgs(e.Exception));
         }
 
@@ -118,23 +128,14 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
                 try
                 {
                     OnOperationStarted(this, new FileOperationStartedEventArgs(source.FullName));
-
                     PreOperationHandlers(source, target);
-
-                    FileUtils.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
-
-                    if (cancellation.IsCancellationRequested)
-                        break;
-
+                    TryCopyFile(source, target);
+                    target.Refresh();
                     PostOperationHandlers(source, target, () => { ProgressHandler(source, target, target.Length, 0); });
-
                     OnCompleted(this, new FileOperationCompletedEventArgs(target));
-
-                    lock (SynchronizingObject)
-                    {
-                        Statistics.BytesTransferred += target.Length;
-                        Statistics.TotalFiles++;
-                    }
+                }
+                catch (OperationCanceledException)
+                {
                 }
                 catch (Exception e)
                 {

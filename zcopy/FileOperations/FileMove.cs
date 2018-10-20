@@ -22,17 +22,13 @@ namespace BananaHomie.ZCopy.FileOperations
             Options = options;
         }
 
-        public void Move(CancellationToken cancellationToken = default)
-        {
-            Invoke(cancellationToken);
-        }
-
         public override void Invoke(CancellationToken cancellationToken = default)
         {
             base.cancellation = cancellationToken;
             var searchOption = Options.HasFlag(MoveOptions.Recurse) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             var search = new FileSystemSearch.FileSystemSearch(Source, FileFilters, DirectoryFilters, searchOption);
             search.FileFound += SearchOnFileFound;
+            search.Error += SearchOnError;
 
             search.Search(cancellationToken);
         }
@@ -44,15 +40,31 @@ namespace BananaHomie.ZCopy.FileOperations
 
             try
             {
-                FileUtils.MoveFile(file, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                cancellation.ThrowIfCancellationRequested();
+                TryMoveFile(file, target);
+                target.Refresh();
+                OnCompleted(this, new FileOperationCompletedEventArgs(target));
+            }
+            catch (OperationCanceledException)
+            {
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(e.Message + " " + e.InnerException?.Message);
+                OnError(this, new FileOperationErrorEventArgs(e));
             }
+        }
 
-            Statistics.TotalFiles++;
-            Statistics.BytesTransferred += file.Length;
+        private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
+        {
+            switch (e.Item)
+            {
+                case FileInfo _:
+                    Statistics.SkippedFiles++;
+                    break;
+                case DirectoryInfo _:
+                    Statistics.SkippedDirectories++;
+                    break;
+            }
         }
 
         internal override string GetOptionsString()

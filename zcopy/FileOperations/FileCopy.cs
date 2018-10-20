@@ -10,13 +10,6 @@ namespace BananaHomie.ZCopy.FileOperations
 {
     public class FileCopy : FileOperation
     {
-        #region Fields
-
-        private int skippedDirectories;
-        private int skippedFiles;
-
-        #endregion
-
         #region Properties
 
         public CopyOptions Options { get; }
@@ -69,10 +62,10 @@ namespace BananaHomie.ZCopy.FileOperations
             switch (e.Item)
             {
                 case FileInfo _:
-                    skippedFiles++;
+                    Statistics.SkippedFiles++;
                     break;
                 case DirectoryInfo _:
-                    skippedDirectories++;
+                    Statistics.SkippedDirectories++;
                     break;
             }
         }
@@ -88,14 +81,10 @@ namespace BananaHomie.ZCopy.FileOperations
             {
                 cancellation.ThrowIfCancellationRequested();
                 PreOperationHandlers(file, target);
-
                 TryCopyFile(file, target);
-
                 target.Refresh();
-
                 PostOperationHandlers(file, target, () => { ProgressHandler(file, target, target.Length, 0); });
                 ProgressHandler(file, target, target.Length, 0);
-
                 OnCompleted(this, new FileOperationCompletedEventArgs(target));
             }
             catch (OperationCanceledException)
@@ -110,33 +99,6 @@ namespace BananaHomie.ZCopy.FileOperations
         internal override string GetOptionsString()
         {
             return Options.ToString();
-        }
-
-        private void TryCopyFile(FileInfo source, FileInfo target)
-        {
-            var tries = 0;
-            while (true)
-            {                
-                try
-                {
-                    FileUtils.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
-                    Statistics.TotalFiles++;
-                    Statistics.BytesTransferred += target.Length;
-                    break;
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    if (tries++ >= RetryCount)
-                        throw;
-
-                    OnRetryStarted(this, new FileOperationRetryStartedEventArgs(RetryCount, tries, RetryInterval, e));
-                    Thread.Sleep(RetryInterval);
-                }
-            }
         }
 
         #endregion

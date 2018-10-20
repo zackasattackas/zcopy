@@ -27,6 +27,7 @@ namespace BananaHomie.ZCopy.FileOperations
 
         #region Properties
 
+        protected object SynchronizingObject { get; }
         public List<IFileOperationHandler> Handlers { get; }
         public DirectoryInfo Source { get; set; }
         public DirectoryInfo Destination { get; set; }
@@ -69,6 +70,7 @@ namespace BananaHomie.ZCopy.FileOperations
 
         protected FileOperation(DirectoryInfo source, DirectoryInfo destination, List<ISearchFilter> fileFilters, List<ISearchFilter> directoryFilters)
         {
+            SynchronizingObject = new object();
             Source = source;
             Destination = destination;
             FileFilters = fileFilters;
@@ -181,6 +183,68 @@ namespace BananaHomie.ZCopy.FileOperations
             WaitHandle.WaitAll(Handlers.Select(h => h.WaitHandle).ToArray());
             callbackCancellation?.Cancel();
             callbackCancellation?.Dispose();
+        }
+
+        protected void TryCopyFile(FileInfo source, FileInfo target)
+        {
+            var tries = 0;
+            while (true)
+            {
+                try
+                {
+                    FileUtils.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+
+                    lock (SynchronizingObject)
+                    {
+                        Statistics.TotalFiles++;
+                        Statistics.BytesTransferred += target.Length;
+                    }
+ 
+                    break;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    if (tries++ >= RetryCount)
+                        throw;
+
+                    OnRetryStarted(this, new FileOperationRetryStartedEventArgs(RetryCount, tries, RetryInterval, e));
+                    Thread.Sleep(RetryInterval);
+                }
+            }
+        }
+
+        protected void TryMoveFile(FileInfo source, FileInfo target)
+        {
+            var tries = 0;
+            while (true)
+            {
+                try
+                {
+                    FileUtils.MoveFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                    lock (SynchronizingObject)
+                    {
+                        Statistics.TotalFiles++;
+                        Statistics.BytesTransferred += target.Length;
+                    }
+                    break;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    if (tries++ >= RetryCount)
+                        throw;
+
+                    OnRetryStarted(this, new FileOperationRetryStartedEventArgs(RetryCount, tries, RetryInterval, e));
+                    Thread.Sleep(RetryInterval);
+                }
+            }
         }
 
         #endregion

@@ -25,5 +25,20 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
         {
             return string.Empty;
         }
+
+        private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
+        {
+            switch (e.Item)
+            {
+                case FileInfo _:
+                    Statistics.SkippedFiles++;
+                    break;
+                case DirectoryInfo _:
+                    Statistics.SkippedDirectories++;
+                    break;
+            }
+
+            OnError(sender, new FileOperationErrorEventArgs(e.Exception));
+        }
     }
 }

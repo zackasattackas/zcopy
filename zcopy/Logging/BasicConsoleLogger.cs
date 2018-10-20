@@ -45,6 +45,7 @@ namespace BananaHomie.ZCopy.Logging
             operation.OperationCompleted += MtfoOnOperationCompleted;
             operation.ChunkFinished += MtfoOnChunkFinished;
             operation.Error += MtfoOnError;
+            //operation.RetryStarted += OperationOnRetryStarted;
 
             isCopy = operation is FileCopy || operation is MultiThreadedFileCopy;
             cancellation = new CancellationTokenSource();
@@ -86,6 +87,11 @@ namespace BananaHomie.ZCopy.Logging
             lock (lockObj)
                 ZCopyOutput.PrintError(e.Exception.Message + " " + e.Exception.InnerException?.Message);
         }
+
+        //private void OperationOnRetryStarted(object sender, FileOperationRetryStartedEventArgs e)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         #endregion
 
