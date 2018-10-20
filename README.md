@@ -22,7 +22,7 @@ C:\> zcopy C:\users\zack D:\MyProfileData -r -mt -da=HR!
 ### Command-line Syntax
 ```
 C:\> zcopy --help
-zcopy 0.0.227.230
+zcopy 0.0.241.410
 
 File copy with progress!
 
@@ -59,6 +59,7 @@ Options:
   -nh|--no-header             Do not print the header information
   -nf|--no-footer             Do not print the footer information
   -utc                        Interpret and display date/time values in coordinated universal time
+  --no-ansi-console           Disable virtual terminal processing and ANSI escape sequences
   -?|-h|--help                Show help information
 
 *Search filters support wildcards by default. Use '--regex' to enable regular expression pattern matching
