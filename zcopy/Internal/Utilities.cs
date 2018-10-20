@@ -75,21 +75,24 @@ namespace BananaHomie.ZCopy.Internal
             {
                 int read;
                 long copied = 0;
-                while ((read = fsread.Read(buffer, 0, bufferSize)) != 0 && !cancellationToken.IsCancellationRequested)
+                while ((read = fsread.Read(buffer, 0, bufferSize)) != 0)
                 {
                     fswrite.Write(buffer, 0, read);
                     callback?.Invoke(source, destination, copied += read, read);
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }
 
             destination.Refresh();
 
-            if (cancellationToken.IsCancellationRequested && destination.Length != source.Length)
+            if (cancellationToken.IsCancellationRequested)
             {
                 destination.Delete();
-                return;
+                cancellationToken.ThrowIfCancellationRequested();
             }
-           
+
+            if (whatToCopy == WhatToCopy.None || whatToCopy == WhatToCopy.Data)
+                return;
             if (whatToCopy.HasFlag(WhatToCopy.Timestamps))
             {
                 destination.CreationTime = source.CreationTime;

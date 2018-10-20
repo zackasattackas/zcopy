@@ -82,19 +82,14 @@ namespace BananaHomie.ZCopy.FileOperations
             var file = args.Item;
             OnOperationStarted(this, new FileOperationStartedEventArgs(file.FullName));
 
-            if (cancellation.IsCancellationRequested)
-                return;
-
             var target = Utilities.GetDestinationFile(Source, file, Destination);
 
             try
             {
+                cancellation.ThrowIfCancellationRequested();
                 PreOperationHandlers(file, target);
 
-                Utilities.CopyFile(file, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
-
-                if (cancellation.IsCancellationRequested)
-                    return;
+                TryCopyFile(file, target);
 
                 target.Refresh();
 
@@ -102,6 +97,10 @@ namespace BananaHomie.ZCopy.FileOperations
                 ProgressHandler(file, target, target.Length, 0);
 
                 OnCompleted(this, new FileOperationCompletedEventArgs(target));
+            }
+            catch (OperationCanceledException)
+            {
+                return;                
             }
             catch (Exception e)
             {
@@ -120,6 +119,31 @@ namespace BananaHomie.ZCopy.FileOperations
         private bool VerifyNeeded()
         {
             return Options.HasFlag(CopyOptions.VerifyMD5);
+        }
+
+        private void TryCopyFile(FileInfo source, FileInfo target)
+        {
+            var tries = 0;
+            while (true)
+            {                
+                try
+                {
+                    Utilities.CopyFile(source, target, BufferSize, WhatToCopy, ProgressHandler, cancellation);
+                    break;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    if (tries++ >= RetryCount)
+                        throw;
+
+                    OnRetryStarted(this, new FileOperationRetryStartedEventArgs(RetryCount, tries, RetryInterval, e));
+                    //Thread.Sleep(RetryInterval);
+                }
+            }
         }
 
         #endregion

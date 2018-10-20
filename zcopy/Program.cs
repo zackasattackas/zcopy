@@ -4,16 +4,15 @@ using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using static BananaHomie.ZCopy.Internal.NativeMethods;
 
 namespace BananaHomie.ZCopy
 {
     internal class Program
     {
         private static void Main(string[] args)
-        {            
+        {
             try
-            {                
+            {
                 CommandLineApplication.Execute<ZCopyCommand>(args);
             }
             catch (Exception e)
@@ -44,9 +43,22 @@ namespace BananaHomie.ZCopy
                     break;
             }
 
-            PrintException(e);            
+            if (ZCopyConfiguration.Environment.DisableAnsiConsole)
+                PrintException(e);
+            else
+                PrintExceptionAnsi(e);
 
-            void PrintException(Exception ex) => Utilities.Print(ex.Message + " " + ex.InnerException?.Message, color: ConsoleColor.Red);
+            #region Local functions
+
+            void PrintExceptionAnsi(Exception ex) =>
+                ZCopyOutput.PrintError(ex.Message + " " + ex.InnerException?.Message);
+
+            void PrintException(Exception ex) =>
+                Utilities.Print(ex.Message + " " + ex.InnerException?.Message, color: ConsoleColor.Red);
+
+            #endregion
         }
     }
 }
+
+

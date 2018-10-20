@@ -118,7 +118,7 @@ namespace BananaHomie.ZCopy.Commands
                     list.Add(new BasicConsoleLogger(uom));
                 else
                     list.Add(new ConsoleLogger(uom));
-            if (LogFile != null)
+            if (LogFile != null || Console.IsOutputRedirected)
                 list.Add(new FileLogger(LogFile, false));
 
             ZCopyConfiguration.CopySpeedUom = uom;
@@ -129,12 +129,15 @@ namespace BananaHomie.ZCopy.Commands
         private FileOperation NewFileCopyOperation()
         {
             var fileCopy = new FileCopy(
-                    new DirectoryInfo(Source),
-                    new DirectoryInfo(Destination),
-                    GetFileFilters(),
-                    GetDirectoryFilters(),
-                    GetCopyOptions())
-            { BufferSize = BufferSize, Credentials = GetCredentials(), WhatToCopy = GetWhatToCopy() };
+                new DirectoryInfo(Source),
+                new DirectoryInfo(Destination),
+                GetFileFilters(),
+                GetDirectoryFilters(),
+                GetCopyOptions())
+            {
+                BufferSize = BufferSize, Credentials = GetCredentials(), WhatToCopy = GetWhatToCopy(),
+                RetryCount = RetryCount, RetryInterval = TimeSpan.FromSeconds(RetryIntervalSeconds)
+            };
 
             return ThreadCount.HasValue ? (FileOperation) fileCopy.MakeMultiThreaded(ThreadCount.Value ?? 8) : fileCopy;
 

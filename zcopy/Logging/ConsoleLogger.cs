@@ -54,6 +54,7 @@ namespace BananaHomie.ZCopy.Logging
             fileOperation.ChunkFinished += FileOperationOnChunkFinished;
             //fileOperation.OperationCompleted += FileOperationOnOperationCompleted;
             fileOperation.Error += FileOperationOnError;
+            fileOperation.RetryStarted += FileOperationOnRetryStarted;
 
             verification = fileOperation.Handlers.OfType<MD5Verification>().SingleOrDefault();
             if (verification != null)
@@ -108,7 +109,7 @@ namespace BananaHomie.ZCopy.Logging
 
         private void FileOperationOnError(object sender, FileOperationErrorEventArgs e)
         {
-            ZCopyOutput.PrintError((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n'));
+            ZCopyOutput.PrintError((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n'), false);
         }
 
         //private void FileOperationOnOperationCompleted(object sender, FileOperationCompletedEventArgs e)
@@ -193,6 +194,20 @@ namespace BananaHomie.ZCopy.Logging
         {
             hashTimer.Stop();
             verificationResult = e.Successful;
+        }
+
+        private void FileOperationOnRetryStarted(object sender, FileOperationRetryStartedEventArgs e)
+        {
+            var timer = Stopwatch.StartNew();
+            var format = $"{EscapeCodes.SavePosition()}{{0}}{EscapeCodes.RestorePosition()}";
+
+            ZCopyOutput.PrintError(e.Reason.Message + " " + e.Reason.InnerException?.Message, false);
+
+            while (timer.ElapsedMilliseconds < e.RetryInterval.TotalMilliseconds)
+                ZCopyOutput.Print(format,$"Retrying in {e.RetryInterval - timer.Elapsed:mm\\mss\\s}");
+
+            timer.Stop();
+            ZCopyOutput.Print();
         }
 
         #endregion

@@ -1,12 +1,12 @@
-﻿using System;
+﻿using BananaHomie.ZCopy.FileSystemSearch;
+using BananaHomie.ZCopy.Internal;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading;
-using BananaHomie.ZCopy.FileSystemSearch;
-using BananaHomie.ZCopy.Internal;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
@@ -15,12 +15,26 @@ using BananaHomie.ZCopy.Internal;
 
 namespace BananaHomie.ZCopy.FileOperations
 {
+    public class FileOperationRetryStartedEventArgs : EventArgs
+    {
+        public FileOperationRetryStartedEventArgs(int maxRetries, int retryCount, TimeSpan retryInterval, Exception reason)
+        {
+            MaxRetries = maxRetries;
+            RetryCount = retryCount;
+            RetryInterval = retryInterval;
+            Reason = reason;
+        }
+
+        public int MaxRetries { get; }
+        public int RetryCount { get;}
+        public TimeSpan RetryInterval { get; }
+        public Exception Reason { get; set; }
+    }
     public abstract class FileOperation : IDisposable
     {
         #region Fields
 
         protected WindowsImpersonationContext impersonationContext;
-        // protected string currentFile;
         protected CancellationToken cancellation;
         private NetworkCredential credentials;
 
@@ -35,10 +49,12 @@ namespace BananaHomie.ZCopy.FileOperations
         public List<ISearchFilter> DirectoryFilters { get; set; }
         public int BufferSize { get; set; }
         public FileCopyStats Statistics { get; protected set; }
-        public TimeSpan InterPacketGap { get; set; }
-        public TimeSpan StartTimeOfDay { get; set; }
-        public TimeSpan StopTimeOfDay { get; set; }
+        //public TimeSpan InterPacketGap { get; set; }
+        //public TimeSpan StartTimeOfDay { get; set; }
+        //public TimeSpan StopTimeOfDay { get; set; }
         public WhatToCopy WhatToCopy { get; set; } = WhatToCopy.Data;
+        public int RetryCount { get; set; }
+        public TimeSpan RetryInterval { get; set; }
 
         public NetworkCredential Credentials
         {
@@ -60,6 +76,7 @@ namespace BananaHomie.ZCopy.FileOperations
         public event EventHandler<FileOperationProgressEventArgs> ChunkFinished;
         public event EventHandler<FileOperationCompletedEventArgs> OperationCompleted;
         public event EventHandler<FileOperationErrorEventArgs> Error;
+        public event EventHandler<FileOperationRetryStartedEventArgs> RetryStarted; 
 
         #endregion
 
@@ -124,6 +141,11 @@ namespace BananaHomie.ZCopy.FileOperations
         protected void OnError(object sender, FileOperationErrorEventArgs args)
         {
             Error?.Invoke(sender, args);
+        }
+
+        protected void OnRetryStarted(object sender, FileOperationRetryStartedEventArgs args)
+        {
+            RetryStarted?.Invoke(sender, args);
         }
 
         protected void PreOperationHandlers(FileInfo source, FileInfo target, Action waitIterationCallback = default)
