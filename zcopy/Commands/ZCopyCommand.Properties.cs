@@ -69,7 +69,7 @@ namespace BananaHomie.ZCopy.Commands
 
         [Option(
             "-mt|--multi-thread=<count>",
-            "Multithreaded operation. The default thread count is 8. (implies '--basic-output')",
+            "Multithreaded operation. The default thread count is 8. (implies '-bo')",
             CommandOptionType.SingleOrNoValue)]
         public (bool HasValue, int? Value) ThreadCount { get; set; }
 
