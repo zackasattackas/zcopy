@@ -22,7 +22,7 @@ C:\> zcopy C:\users\zack D:\MyProfileData -r -mt -da=HR!
 ### Command-line Syntax
 ```
 C:\> zcopy --help
-zcopy 0.0.251.1643
+zcopy 0.0.267.2018
 
 File copy with progress!
 
@@ -46,6 +46,7 @@ Options:
   -rc|--retry-count=<count>    Retry the operation n times on failure
   -ri|--retry-interval=<secs>  Wait n seconds before retrying
   --regex                      Interpret search patterns as regular expressions*
+  -s|--system                  Include files/directories with the System attribute
   -xf=<files*>                 Files to be excluded
   -xd=<directories*>           Subdirectories to be excluded
   -fa=<ACEHORS>                File attributes to include/exclude. Append '!' to exclude the specified attributes
