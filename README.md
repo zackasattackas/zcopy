@@ -22,7 +22,7 @@ C:\> zcopy C:\users\zack D:\MyProfileData -r -mt -da=HR!
 ### Command-line Syntax
 ```
 C:\> zcopy --help
-zcopy 0.0.241.410
+zcopy 0.0.250.1635
 
 File copy with progress!
 
@@ -43,6 +43,8 @@ Options:
   -md5                        Compare the MD5 checksum of the copied file to the source
   -mt|--multi-thread=<count>  Multithreaded operation. The default thread count is 8. (implies '-bo')
   -i|--info=<TAS>             File info to retain. Allowed values are 'T=timestamps', 'A=attributes', 'S=security'
+  --retry=<count>             Retry the operation n times on failure
+  --retry-interval=<secs>     Wait n seconds before retrying
   --regex                     Interpret search patterns as regular expressions*
   -xf=<files*>                Files to be excluded
   -xd=<directories*>          Subdirectories to be excluded
