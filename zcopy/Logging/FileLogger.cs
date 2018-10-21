@@ -12,6 +12,7 @@ namespace BananaHomie.ZCopy.Logging
     internal class FileLogger : ICopyProgressLogger
     {
         private readonly FileInfo logFile;
+        private bool useStandardOutput;
         private bool append;
         private bool isCopy;
 
@@ -19,6 +20,11 @@ namespace BananaHomie.ZCopy.Logging
         {
             logFile = new FileInfo(filePath);
             this.append = append;
+        }
+
+        public FileLogger()
+        {
+            useStandardOutput = true;
         }
 
         public void Initialize(CommandLineApplication app, FileOperation fileOperation)
@@ -91,7 +97,7 @@ namespace BananaHomie.ZCopy.Logging
             if (newLine)
                 value += "\r\n";
 
-            using (var fwriter = new StreamWriter(logFile.OpenWrite()))
+            using (var fwriter = new StreamWriter(useStandardOutput ? Console.OpenStandardOutput() : logFile.OpenWrite()))
                 fwriter.Write(value);
         }
     }

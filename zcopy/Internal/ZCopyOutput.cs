@@ -11,6 +11,7 @@ namespace BananaHomie.ZCopy.Internal
         {
             Print(string.Format(format, values), false);
         }
+
         public static void Print(string value = "", bool newLine = true)
         {
             Console.Out.Write(Formalize(value, newLine));

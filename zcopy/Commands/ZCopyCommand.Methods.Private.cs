@@ -118,8 +118,10 @@ namespace BananaHomie.ZCopy.Commands
                     list.Add(new BasicConsoleLogger(uom));
                 else
                     list.Add(new ConsoleLogger(uom));
-            if (LogFile != null || Console.IsOutputRedirected)
+            if (LogFile != null)
                 list.Add(new FileLogger(LogFile, false));
+            else if (Console.IsOutputRedirected)
+                list.Add(new FileLogger());
 
             ZCopyConfiguration.CopySpeedUom = uom;
 
