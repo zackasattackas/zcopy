@@ -113,15 +113,23 @@ namespace BananaHomie.ZCopy.Commands
             var list = new List<ICopyProgressLogger>();
             var uom = GetCopySpeedUom();
 
-            if (!NoConsoleOutput && !Console.IsOutputRedirected)
-                if (BasicConsoleOutput || ThreadCount.HasValue)
-                    list.Add(new BasicConsoleLogger(uom));
-                else
-                    list.Add(new ConsoleLogger(uom));
-            if (LogFile != null)
-                list.Add(new FileLogger(LogFile, false));
-            else if (Console.IsOutputRedirected)
+            if (LogFile != null && Console.IsOutputRedirected)
+                throw new ArgumentException("Cannot write to a log file when output is redirected.");
+
+            if (Console.IsOutputRedirected)
                 list.Add(new FileLogger());
+            else
+            {
+                if (LogFile != null)
+                    list.Add(new FileLogger(LogFile, false));
+
+                // If '-lf' is specified but not '--tee', a console logger will not be used
+                if (!NoConsoleOutput && (LogFile == null || TeeOutput))
+                    if (BasicConsoleOutput || ThreadCount.HasValue)
+                        list.Add(new BasicConsoleLogger(uom));
+                    else
+                        list.Add(new ConsoleLogger(uom));
+            }
 
             ZCopyConfiguration.CopySpeedUom = uom;
 

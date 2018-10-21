@@ -93,6 +93,9 @@ namespace BananaHomie.ZCopy.Commands
         //[Option("-lf|--log-file=<filePath>", "Write progress messages to a file", CommandOptionType.SingleValue)]
         public string LogFile { get; set; }
 
+        //[Option("--tee", "When '-lf' is specified, also print progress to the console", CommandOptionType.NoValue)]
+        public bool TeeOutput { get; set; }
+
         //[Option("-le|--log-event", "Write progress messages to the Application event log", CommandOptionType.SingleValue)]
         //public bool EventLog { get; set; }
 
