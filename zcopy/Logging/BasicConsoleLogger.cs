@@ -29,10 +29,10 @@ namespace BananaHomie.ZCopy.Logging
 
         #region Ctor
 
-        public BasicConsoleLogger(CopySpeedUomTypes uom = CopySpeedUomTypes.Megabits)
+        public BasicConsoleLogger()
         {
             lockObj = new object();
-            displayUom = uom;
+            displayUom = ZCopyConfiguration.CopySpeedUom;
         }
 
         #endregion

@@ -39,7 +39,7 @@ namespace BananaHomie.ZCopy.Logging
 
         #region Ctor
 
-        public ConsoleLogger(CopySpeedUomTypes uom = CopySpeedUomTypes.Megabits)
+        public ConsoleLogger()
         {
             handlerControl = new Mutex();
         }
