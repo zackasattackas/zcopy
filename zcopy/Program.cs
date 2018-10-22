@@ -43,7 +43,7 @@ namespace BananaHomie.ZCopy
                     break;
             }
 
-            if (ZCopyConfiguration.Environment.DisableAnsiConsole)
+            if (ZCopyConfiguration.DisableAnsiConsole || (ZCopyConfiguration.Environment.DisableAnsiConsole ?? false))
                 PrintException(e);
             else
                 PrintExceptionAnsi(e);

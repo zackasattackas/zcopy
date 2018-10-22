@@ -37,7 +37,7 @@ namespace BananaHomie.ZCopy.Internal
         {
             return Console.IsOutputRedirected ||
                    ZCopyConfiguration.DisableAnsiConsole ||
-                   ZCopyConfiguration.Environment.DisableAnsiConsole;
+                   (ZCopyConfiguration.Environment.DisableAnsiConsole ?? false);
         }
     }
 }
