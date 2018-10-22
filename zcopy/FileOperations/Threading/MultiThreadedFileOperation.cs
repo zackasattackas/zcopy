@@ -79,7 +79,7 @@ namespace BananaHomie.ZCopy.FileOperations.Threading
                     PreOperationHandlers(source, target);
                     ProcessFile(source, target);
                     target.Refresh();
-                    PostOperationHandlers(source, target, () => { ProgressHandler(source, target, target.Length, 0); });
+                    PostOperationHandlers(source, target);
                     OnOperationCompleted(this, new FileOperationCompletedEventArgs(target));
                 }
                 catch (OperationCanceledException)
