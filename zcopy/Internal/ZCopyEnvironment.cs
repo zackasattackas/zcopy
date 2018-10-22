@@ -8,10 +8,41 @@ namespace BananaHomie.ZCopy.Internal
     internal class ZCopyEnvironment
     {
         [EnvironmentVariable("ZCOPY_DISABLE_ANSI_CONSOLE", false)]
-        public bool DisableAnsiConsole { get; set; }
+        public bool? DisableAnsiConsole
+        {
+            get
+            {
+                var value = Environment.GetEnvironmentVariable("ZCOPY_DISABLE_ANSI_CONSOLE");
+
+                if (value == null)
+                    return null;
+
+                if (!bool.TryParse(value, out var result))
+                    throw new ZCopyException("Invalid value found for user envuronment variable ZCOPY_DISABLE_ANSI_CONSOLE");
+
+                return result;
+            }
+        }
 
         [EnvironmentVariable("ZCOPY_DEFAULT_COMMAND_LINE_OPTIONS")]
-        public string DefaultCommandLineOptions { get; set; }
+        public string DefaultCommandLineOptions => Environment.GetEnvironmentVariable("ZCOPY_DEFAULT_COMMAND_LINE_OPTIONS");
+
+        [EnvironmentVariable("ZCOPY_DEFAULT_MAX_THREAD_COUNT")]
+        public int? DefaultMaxThreadCount
+        {
+            get
+            {
+                var value = Environment.GetEnvironmentVariable("ZCOPY_DISABLE_ANSI_CONSOLE");
+
+                if (value == null)
+                    return null;
+
+                if (!int.TryParse(value, out var result))
+                    throw new ZCopyException("Invalid value found for user envuronment variable ZCOPY_DEFAULT_MAX_THREAD_COUNT");
+
+                return result;
+            }
+        }
 
         public ZCopyEnvironment()
         {
