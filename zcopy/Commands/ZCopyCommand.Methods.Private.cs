@@ -124,11 +124,12 @@ namespace BananaHomie.ZCopy.Commands
                     list.Add(new FileLogger(LogFile, false));
 
                 // If '-lf' is specified but not '--tee', a console logger will not be used
-                if (!NoConsoleOutput && (LogFile == null || TeeOutput))
-                    if (BasicConsoleOutput || ThreadCount.HasValue)
-                        list.Add(new BasicConsoleLogger());
-                    else
-                        list.Add(new ConsoleLogger());
+                if (NoConsoleOutput || LogFile != null && !TeeOutput)
+                    return list;
+                if (BasicConsoleOutput || ThreadCount.HasValue)
+                    list.Add(new BasicConsoleLogger());
+                else
+                    list.Add(new ConsoleLogger());
             }
 
             return list;
@@ -254,7 +255,9 @@ namespace BananaHomie.ZCopy.Commands
             if (Username == default)
                 return default;
             var domainUser = Username.Split('@', '\\');
-            return new NetworkCredential(domainUser[0], domainUser.Length > 1 ? domainUser[1] : default,
+            return new NetworkCredential(
+                domainUser[0], 
+                domainUser.Length > 1 ? domainUser[1] : default,
                 Password ?? Prompt.GetPassword("Password: "));
         }
 

@@ -1,7 +1,6 @@
 ﻿using BananaHomie.ZCopy.AnsiConsole;
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
 using System;
-using System.Diagnostics;
 using Ansi = BananaHomie.ZCopy.AnsiConsole.AnsiConsole;
 
 namespace BananaHomie.ZCopy.Internal
@@ -15,14 +14,7 @@ namespace BananaHomie.ZCopy.Internal
 
         public static void Print(string value = "", bool newLine = true)
         {
-            try
-            {
-                Console.Out.Write(Formalize(value, newLine));
-            }
-            catch (Exception e)
-            {
-                Debugger.Break();
-            }
+            Console.Out.Write(Formalize(value, newLine));
         }
 
         public static void PrintError(string value, bool newLine = true)
@@ -32,13 +24,20 @@ namespace BananaHomie.ZCopy.Internal
 
         private static string Formalize(string value, bool newLine)
         {
-            if (ZCopyConfiguration.Environment.DisableAnsiConsole)
+            if (DisableAnsiConsole())
                 value = Ansi.StripEscapeSequences(value);
 
             if (newLine)
                 value += "\r\n";
 
             return value;
+        }
+
+        private static bool DisableAnsiConsole()
+        {
+            return Console.IsOutputRedirected ||
+                   ZCopyConfiguration.DisableAnsiConsole ||
+                   ZCopyConfiguration.Environment.DisableAnsiConsole;
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using BananaHomie.ZCopy.Internal;
+﻿using BananaHomie.ZCopy.Internal;
 using BananaHomie.ZCopy.Internal.Extensions;
 using BananaHomie.ZCopy.Logging;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using static BananaHomie.ZCopy.Internal.NativeMethods;
 
 namespace BananaHomie.ZCopy.Commands
@@ -33,10 +33,10 @@ namespace BananaHomie.ZCopy.Commands
             ValidateArguments();
             HookCancelKeyPressEvent();
 
+            // Set static configuration properties
             ZCopyConfiguration.UseUtc = UtcTime;
             ZCopyConfiguration.RefreshInterval = TimeSpan.FromMilliseconds(RefreshInterval);
-            if (DisableAnsiConsole)
-                ZCopyConfiguration.Environment.DisableAnsiConsole = DisableAnsiConsole;
+            ZCopyConfiguration.DisableAnsiConsole = DisableAnsiConsole;
 
             stopwatch = Stopwatch.StartNew();
             var operation = Move ? NewFileMoveOperation() : NewFileCopyOperation();
@@ -60,7 +60,6 @@ namespace BananaHomie.ZCopy.Commands
         {
             if (Console.IsOutputRedirected)
                 return;
-            //Console.CursorVisible = false;
 
             if (Console.BufferWidth < 135)
                 Console.BufferWidth = 135;
@@ -78,8 +77,6 @@ namespace BananaHomie.ZCopy.Commands
         {
             if (Console.IsOutputRedirected)
                 return;
-
-            //Console.CursorVisible = true;
 
             if (ZCopyConfiguration.Environment.DisableAnsiConsole)
                 return;
