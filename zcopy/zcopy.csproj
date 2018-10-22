@@ -59,7 +59,7 @@
     <Compile Include="AnsiConsole\EscapeCodes.cs" />
     <Compile Include="AnsiConsole\Extensions\StringBuilderExtensions.cs" />
     <Compile Include="AnsiConsole\Extensions\StringExtensions.cs" />
-    <Compile Include="Commands\DelegatingSearchFilter.cs" />
+    <Compile Include="FileSystemSearch\DelegatingSearchFilter.cs" />
     <Compile Include="Commands\ZCopyCommand.cs" />
     <Compile Include="Commands\ZCopyCommand.Methods.Private.cs" />
     <Compile Include="AnsiConsole\AnsiConsole.cs" />
@@ -130,7 +130,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_AssemblyInfoFilename="" BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
+      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

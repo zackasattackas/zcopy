@@ -8,11 +8,6 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading;
 
-// ReSharper disable InconsistentNaming
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable EventNeverSubscribedTo.Global
-
 namespace BananaHomie.ZCopy.FileOperations
 {
     public abstract class FileOperation : IDisposable
@@ -44,7 +39,7 @@ namespace BananaHomie.ZCopy.FileOperations
         public TimeSpan RetryInterval { get; set; }
         public NetworkCredential Credentials
         {
-            get => credentials;
+            protected get => credentials;
             set
             {
                 impersonationContext?.Undo();

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using BananaHomie.ZCopy.FileSystemSearch;
 
-namespace BananaHomie.ZCopy.Commands
+namespace BananaHomie.ZCopy.FileSystemSearch
 {
     public class DelegatingSearchFilter : ISearchFilter
     {
