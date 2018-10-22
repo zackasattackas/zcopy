@@ -1,44 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using BananaHomie.ZCopy.FileSystemSearch;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using BananaHomie.ZCopy.FileSystemSearch;
 
 namespace BananaHomie.ZCopy.FileOperations.Threading
 {
     public class MultiThreadedFileMove : MultiThreadedFileOperation
     {
+        #region Ctor
+
         public MultiThreadedFileMove(
             DirectoryInfo source, 
             DirectoryInfo destination, 
             List<ISearchFilter> fileFilters, 
-            List<ISearchFilter> directoryFilters) 
-            : base(source, destination, fileFilters, directoryFilters)
+            List<ISearchFilter> directoryFilters,
+            FileOperationOptions options) 
+            : base(source, destination, fileFilters, directoryFilters, options)
         {
         }
 
-        public override void Invoke(CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+        #endregion
 
-        internal override string GetOptionsString()
-        {
-            return string.Empty;
-        }
+        #region Protected methods
 
-        private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
+        protected override void ProcessFile(FileInfo source, FileInfo destination)
         {
-            switch (e.Item)
+            try
             {
-                case FileInfo _:
-                    Statistics.SkippedFiles++;
-                    break;
-                case DirectoryInfo _:
-                    Statistics.SkippedDirectories++;
-                    break;
+                TryMoveFile(source, destination);
             }
-
-            OnError(sender, new FileOperationErrorEventArgs(e.Exception));
+            catch (Exception e)
+            {
+                OnError(this, new FileOperationErrorEventArgs(e));
+            }
         }
+
+        #endregion
     }
 }

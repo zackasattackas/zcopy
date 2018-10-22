@@ -141,50 +141,42 @@ namespace BananaHomie.ZCopy.Commands
                 new DirectoryInfo(Destination),
                 GetFileFilters(),
                 GetDirectoryFilters(),
-                GetCopyOptions())
+                GetOptions())
             {
                 BufferSize = BufferSize, Credentials = GetCredentials(), WhatToCopy = GetWhatToCopy(),
                 RetryCount = RetryCount, RetryInterval = TimeSpan.FromSeconds(RetryIntervalSeconds)
             };
 
             return ThreadCount.HasValue ? (FileOperation) fileCopy.MakeMultiThreaded(ThreadCount.Value ?? 8) : fileCopy;
-
-            CopyOptions GetCopyOptions()
-            {
-                var flags = CopyOptions.None;
-
-                if (Recurse)
-                    flags |= CopyOptions.Recurse;
-
-                if (VerifyMD5)
-                    flags |= CopyOptions.VerifyMD5;
-
-                return flags;
-            }
         }
 
-        private FileMove NewFileMoveOperation()
+        private FileOperation NewFileMoveOperation()
         {
-            return new FileMove(
-                    new DirectoryInfo(Source),
-                    new DirectoryInfo(Destination),
-                    GetFileFilters(),
-                    GetDirectoryFilters(),
-                    GetMoveOptions())
-            { BufferSize = BufferSize, Credentials = GetCredentials(), WhatToCopy = GetWhatToCopy() };
-
-            MoveOptions GetMoveOptions()
+            var fileMove = new FileMove(
+                new DirectoryInfo(Source),
+                new DirectoryInfo(Destination),
+                GetFileFilters(),
+                GetDirectoryFilters(),
+                GetOptions())
             {
-                var flags = MoveOptions.None;
+                BufferSize = BufferSize, Credentials = GetCredentials(), WhatToCopy = GetWhatToCopy(),
+                RetryCount = RetryCount, RetryInterval = TimeSpan.FromSeconds(RetryIntervalSeconds)
+            };
 
-                if (Recurse)
-                    flags |= MoveOptions.Recurse;
+            return ThreadCount.HasValue ? (FileOperation) fileMove.MakeMultiThreaded(ThreadCount.Value ?? 8) : fileMove;
+        }
 
-                if (VerifyMD5)
-                    flags |= MoveOptions.VerifyMD5;
+        private FileOperationOptions GetOptions()
+        {
+            var flags = FileOperationOptions.None;
 
-                return flags;
-            }
+            if (Recurse)
+                flags |= FileOperationOptions.Recurse;
+
+            if (VerifyMD5)
+                flags |= FileOperationOptions.VerifyMD5;
+
+            return flags;
         }
 
         private WhatToCopy GetWhatToCopy()

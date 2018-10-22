@@ -101,12 +101,11 @@
     <Compile Include="FileSystemSearch\MaxFileSizeFilter.cs" />
     <Compile Include="FileOperations\MD5VerificationFinishedEventArgs.cs" />
     <Compile Include="FileOperations\MD5VerificationStartedEventArgs.cs" />
-    <Compile Include="FileOperations\MoveOptions.cs" />
     <Compile Include="FileSystemSearch\ISearchFilter.cs" />
     <Compile Include="Internal\ZCopyException.cs" />
     <Compile Include="Internal\ZCopyOutput.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
-    <Compile Include="FileOperations\CopyOptions.cs" />
+    <Compile Include="FileOperations\FileOperationOptions.cs" />
     <Compile Include="Logging\CopySpeedUomTypes.cs" />
     <Compile Include="Logging\EventLogger.cs" />
     <Compile Include="Logging\FileLogger.cs" />
@@ -132,7 +131,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_AssemblyInfoFilename="" BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
+      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -28,6 +28,7 @@ namespace BananaHomie.ZCopy.FileOperations
         #region Properties
 
         protected object SynchronizingObject { get; }
+        public FileOperationOptions Options { get; set; }
         public List<IFileOperationHandler> Handlers { get; }
         public DirectoryInfo Source { get; set; }
         public DirectoryInfo Destination { get; set; }
@@ -41,7 +42,6 @@ namespace BananaHomie.ZCopy.FileOperations
         public WhatToCopy WhatToCopy { get; set; } = WhatToCopy.Data;
         public int RetryCount { get; set; }
         public TimeSpan RetryInterval { get; set; }
-
         public NetworkCredential Credentials
         {
             get => credentials;
@@ -68,7 +68,12 @@ namespace BananaHomie.ZCopy.FileOperations
 
         #region Ctor
 
-        protected FileOperation(DirectoryInfo source, DirectoryInfo destination, List<ISearchFilter> fileFilters, List<ISearchFilter> directoryFilters)
+        protected FileOperation(
+            DirectoryInfo source, 
+            DirectoryInfo destination, 
+            List<ISearchFilter> fileFilters, 
+            List<ISearchFilter> directoryFilters, 
+            FileOperationOptions options)
         {
             SynchronizingObject = new object();
             Source = source;
@@ -77,14 +82,18 @@ namespace BananaHomie.ZCopy.FileOperations
             DirectoryFilters = directoryFilters;
             Statistics = new FileCopyStats();
             Handlers = new List<IFileOperationHandler>();
+            Options = options;
         }
 
         #endregion
 
         #region Public methods
 
-        public abstract void Invoke(CancellationToken cancellationToken = default);
-    
+        public void Start(CancellationToken cancellationToken = default)
+        {
+            SearchForFiles(cancellationToken);
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -93,13 +102,20 @@ namespace BananaHomie.ZCopy.FileOperations
 
         #endregion
 
-        #region Internal methods
+        #region Protected methods        
 
-        internal abstract string GetOptionsString();
+        protected virtual void SearchForFiles(CancellationToken cancellationToken = default)
+        {
+            cancellation = cancellationToken;
+            var searchOption = Options.HasFlag(FileOperationOptions.Recurse) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var search = new FileSystemSearch.FileSystemSearch(Source, FileFilters, DirectoryFilters, searchOption);
+            search.FileFound += OnFileFound;
+            search.Error += OnSearchError;
 
-        #endregion
+            search.Search(cancellationToken);
+        }
 
-        #region Protected methods
+        protected abstract void ProcessFile(FileInfo source, FileInfo destination);
 
         protected void Dispose(bool disposing)
         {
@@ -108,6 +124,40 @@ namespace BananaHomie.ZCopy.FileOperations
                 impersonationContext?.Undo();
                 impersonationContext?.Dispose();
             }
+        }
+
+        protected virtual void OnFileFound(object sender, FileFoundEventArgs args)
+        {
+            var file = args.Item;
+            var target = FileUtils.GetDestinationFile(Source, file, Destination);
+
+            OnOperationStarted(this, new FileOperationStartedEventArgs(file.FullName));
+            
+            if (cancellation.IsCancellationRequested)
+                return;
+
+            PreOperationHandlers(file, target);
+            ProcessFile(file, target);
+            PostOperationHandlers(file, target, () => { ProgressHandler(file, target, target.Length, 0); });
+            ProgressHandler(file, target, target.Length, 0);
+
+            OnOperationCompleted(this, new FileOperationCompletedEventArgs(target));
+        }
+
+        protected void OnSearchError(object sender, FileSystemSearchErrorEventArgs args)
+        {
+            lock (SynchronizingObject)
+                switch (args.Item)
+                {
+                    case FileInfo _:
+                        Statistics.SkippedFiles++;
+                        break;
+                    case DirectoryInfo _:
+                        Statistics.SkippedDirectories++;
+                        break;
+                }
+
+            OnError(sender, new FileOperationErrorEventArgs(args.Exception));
         }
 
         protected void OnOperationStarted(object sender, FileOperationStartedEventArgs args)
@@ -120,7 +170,7 @@ namespace BananaHomie.ZCopy.FileOperations
             ChunkFinished?.Invoke(sender, args);
         }
 
-        protected void OnCompleted(object sender, FileOperationCompletedEventArgs args)
+        protected void OnOperationCompleted(object sender, FileOperationCompletedEventArgs args)
         {
             OperationCompleted?.Invoke(sender, args);
         }

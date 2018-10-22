@@ -1,6 +1,7 @@
 ﻿using BananaHomie.ZCopy.AnsiConsole;
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
 using BananaHomie.ZCopy.FileOperations;
+using BananaHomie.ZCopy.FileOperations.Threading;
 using BananaHomie.ZCopy.Internal;
 using McMaster.Extensions.CommandLineUtils;
 using System;
@@ -66,8 +67,7 @@ namespace BananaHomie.ZCopy.Logging
                 fileOperation.Handlers.Add(verification);
             }
 
-            if (fileOperation is FileCopy copy && copy.Options.HasFlag(CopyOptions.VerifyMD5) ||
-                fileOperation is FileMove move && move.Options.HasFlag(MoveOptions.VerifyMD5))
+            if ((fileOperation is FileCopy || fileOperation is MultiThreadedFileCopy) && fileOperation.Options.HasFlag(FileOperationOptions.VerifyMD5))
             {
                 showVerificationStatus = true;
                 OutputFormat += " {7}";
@@ -109,6 +109,8 @@ namespace BananaHomie.ZCopy.Logging
 
         private void FileOperationOnError(object sender, FileOperationErrorEventArgs e)
         {
+            if (e.Exception is OperationCanceledException)
+                return;
             ZCopyOutput.PrintError((e.Exception.Message + " " + e.Exception.InnerException?.Message).TrimEnd('\r', '\n'), false);
         }
 

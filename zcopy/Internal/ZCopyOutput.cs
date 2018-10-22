@@ -1,6 +1,7 @@
 ﻿using BananaHomie.ZCopy.AnsiConsole;
 using BananaHomie.ZCopy.AnsiConsole.Extensions;
 using System;
+using System.Diagnostics;
 using Ansi = BananaHomie.ZCopy.AnsiConsole.AnsiConsole;
 
 namespace BananaHomie.ZCopy.Internal
@@ -14,12 +15,19 @@ namespace BananaHomie.ZCopy.Internal
 
         public static void Print(string value = "", bool newLine = true)
         {
-            Console.Out.Write(Formalize(value, newLine));
+            try
+            {
+                Console.Out.Write(Formalize(value, newLine));
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
+            }
         }
 
         public static void PrintError(string value, bool newLine = true)
         {
-            Console.Error.WriteLine(Formalize(value, newLine).ColorText(EscapeCodes.ForegroundRed));
+            Console.Error.Write(Formalize(value, newLine).ColorText(EscapeCodes.ForegroundRed));
         }
 
         private static string Formalize(string value, bool newLine)

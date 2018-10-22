@@ -84,6 +84,9 @@ namespace BananaHomie.ZCopy.Logging
 
         private void MtfoOnError(object sender, FileOperationErrorEventArgs e)
         {
+            if (e.Exception is OperationCanceledException)
+                return;
+            
             lock (lockObj)
                 ZCopyOutput.PrintError(e.Exception.Message + " " + e.Exception.InnerException?.Message);
         }
@@ -118,7 +121,7 @@ namespace BananaHomie.ZCopy.Logging
                 var (speedBase, uom) = Helpers.GetCopySpeedBase(ZCopyConfiguration.CopySpeedUom);
                 var speed = Helpers.GetCopySpeed(bytesCopied, speedBase, stopwatch.Elapsed);
                 lock (lockObj)
-                    ZCopyOutput.Print(progressFormat, fileCount, new FileSize(bytesCopied),Helpers.CopySpeedToString(uom, speed));
+                    ZCopyOutput.Print(progressFormat, fileCount, new FileSize(bytesCopied), Helpers.CopySpeedToString(uom, speed));
 
                 Thread.Sleep(ZCopyConfiguration.RefreshInterval);
             }

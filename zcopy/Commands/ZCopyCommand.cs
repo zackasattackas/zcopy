@@ -1,12 +1,13 @@
-﻿using BananaHomie.ZCopy.Internal;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using BananaHomie.ZCopy.Internal;
 using BananaHomie.ZCopy.Internal.Extensions;
 using BananaHomie.ZCopy.Logging;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
+using static BananaHomie.ZCopy.Internal.NativeMethods;
 
 namespace BananaHomie.ZCopy.Commands
 {
@@ -45,7 +46,7 @@ namespace BananaHomie.ZCopy.Commands
 
             loggers = GetLoggers();
             loggers.InitializeAll(app, operation);
-            operation.Invoke(cancellation.Token);
+            operation.Start(cancellation.Token);
             loggers.DeinitializeAll(app, operation);
             stopwatch.Stop();
 
@@ -55,38 +56,36 @@ namespace BananaHomie.ZCopy.Commands
             ResetConsoleSettings();
         }
 
-        private void SetConsoleSettings()
+        private static void SetConsoleSettings()
         {
             if (Console.IsOutputRedirected)
                 return;
-            Console.CursorVisible = false;
+            //Console.CursorVisible = false;
 
-            if (Console.BufferWidth < 120)
-                Console.BufferWidth = 120;
+            if (Console.BufferWidth < 135)
+                Console.BufferWidth = 135;
 
             if (ZCopyConfiguration.Environment.DisableAnsiConsole)
                 return;
-            if (!NativeMethods.GetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE),
-                out var mode))
+            if (!GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), out var mode))
                 Helpers.ThrowLastWin32Exception();
-            if (!NativeMethods.SetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE),
-                (mode | NativeMethods.ENABLE_VIRTUAL_TERMINAL_PROCESSING) ^ NativeMethods.ENABLE_WRAP_AT_EOL_OUTPUT))
+            if (!SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), (mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING) ^ ENABLE_WRAP_AT_EOL_OUTPUT))
                 Helpers.ThrowLastWin32Exception();
 
         }
 
-        private void ResetConsoleSettings()
+        private static void ResetConsoleSettings()
         {
             if (Console.IsOutputRedirected)
                 return;
 
-            Console.CursorVisible = true;
+            //Console.CursorVisible = true;
 
             if (ZCopyConfiguration.Environment.DisableAnsiConsole)
                 return;
-            if (!NativeMethods.GetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE), out var mode))
+            if (!GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), out var mode))
                 Helpers.ThrowLastWin32Exception();
-            if (!NativeMethods.SetConsoleMode(NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE), (mode ^ NativeMethods.ENABLE_VIRTUAL_TERMINAL_PROCESSING) | NativeMethods.ENABLE_WRAP_AT_EOL_OUTPUT))
+            if (!SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), (mode ^ ENABLE_VIRTUAL_TERMINAL_PROCESSING) | ENABLE_WRAP_AT_EOL_OUTPUT))
                 Helpers.ThrowLastWin32Exception();
         }
     }

@@ -1,52 +1,50 @@
-﻿using BananaHomie.ZCopy.FileSystemSearch;
-using BananaHomie.ZCopy.Internal;
+﻿using BananaHomie.ZCopy.FileOperations.Threading;
+using BananaHomie.ZCopy.FileSystemSearch;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 
 namespace BananaHomie.ZCopy.FileOperations
 {
     public class FileMove : FileOperation
     {
-        public MoveOptions Options { get; set; }        
+        #region Ctor
 
         public FileMove(
             DirectoryInfo source,
             DirectoryInfo destination,
             List<ISearchFilter> fileFilters,
             List<ISearchFilter> directoryFilters,
-            MoveOptions options)
-            : base(source, destination, fileFilters, directoryFilters)
+            FileOperationOptions options)
+            : base(source, destination, fileFilters, directoryFilters, options)
         {
-            Options = options;
         }
 
-        public override void Invoke(CancellationToken cancellationToken = default)
-        {
-            base.cancellation = cancellationToken;
-            var searchOption = Options.HasFlag(MoveOptions.Recurse) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            var search = new FileSystemSearch.FileSystemSearch(Source, FileFilters, DirectoryFilters, searchOption);
-            search.FileFound += SearchOnFileFound;
-            search.Error += SearchOnError;
+        #endregion
 
-            search.Search(cancellationToken);
+        #region Public methods
+
+        public MultiThreadedFileMove MakeMultiThreaded(int threadCount)
+        {
+            return new MultiThreadedFileMove(Source, Destination, FileFilters, DirectoryFilters, Options)
+            {
+                BufferSize = BufferSize,
+                Credentials = Credentials,
+                WhatToCopy = WhatToCopy,
+                MaxThreads = threadCount,
+                Options = Options
+            };
         }
 
-        private void SearchOnFileFound(object sender, FileFoundEventArgs args)
-        {
-            var file = args.Item;
-            var target = FileUtils.GetDestinationFile(Source, file, Destination);
+        #endregion
 
+        #region Protected methods
+
+        protected override void ProcessFile(FileInfo source, FileInfo destination)
+        {
             try
             {
-                cancellation.ThrowIfCancellationRequested();
-                TryMoveFile(file, target);
-                target.Refresh();
-                OnCompleted(this, new FileOperationCompletedEventArgs(target));
-            }
-            catch (OperationCanceledException)
-            {
+                TryMoveFile(source, destination);
             }
             catch (Exception e)
             {
@@ -54,22 +52,6 @@ namespace BananaHomie.ZCopy.FileOperations
             }
         }
 
-        private void SearchOnError(object sender, FileSystemSearchErrorEventArgs e)
-        {
-            switch (e.Item)
-            {
-                case FileInfo _:
-                    Statistics.SkippedFiles++;
-                    break;
-                case DirectoryInfo _:
-                    Statistics.SkippedDirectories++;
-                    break;
-            }
-        }
-
-        internal override string GetOptionsString()
-        {
-            return Options.ToString();
-        }
+        #endregion
     }
 }

@@ -33,13 +33,13 @@ namespace BananaHomie.ZCopy.Internal
         public static extern bool CloseHandle(IntPtr handle);
 
         [DllImport("kernel32", SetLastError = true)]
-        public static extern SafeFileHandle GetStdHandle(int nStdHandle);
+        public static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32", SetLastError = true)]
-        public static extern bool GetConsoleMode([In] SafeFileHandle hConsoleMode, [Out] out int dwMode);
+        public static extern bool GetConsoleMode([In] IntPtr hConsoleMode, [Out] out int dwMode);
 
         [DllImport("kernel32", SetLastError = true)]
-        public static extern bool SetConsoleMode([In] SafeFileHandle hConsoleMode, [In] int dwMode);
+        public static extern bool SetConsoleMode([In] IntPtr hConsoleMode, [In] int dwMode);
 
         #endregion
     }
