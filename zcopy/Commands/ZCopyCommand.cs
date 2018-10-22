@@ -64,7 +64,7 @@ namespace BananaHomie.ZCopy.Commands
             if (Console.BufferWidth < 135)
                 Console.BufferWidth = 135;
 
-            if (ZCopyConfiguration.Environment.DisableAnsiConsole)
+            if (ZCopyConfiguration.DisableAnsiConsole || (ZCopyConfiguration.Environment.DisableAnsiConsole ?? false))
                 return;
             if (!GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), out var mode))
                 Helpers.ThrowLastWin32Exception();
@@ -78,7 +78,7 @@ namespace BananaHomie.ZCopy.Commands
             if (Console.IsOutputRedirected)
                 return;
 
-            if (ZCopyConfiguration.Environment.DisableAnsiConsole)
+            if (ZCopyConfiguration.DisableAnsiConsole || (ZCopyConfiguration.Environment.DisableAnsiConsole ?? false))
                 return;
             if (!GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), out var mode))
                 Helpers.ThrowLastWin32Exception();
