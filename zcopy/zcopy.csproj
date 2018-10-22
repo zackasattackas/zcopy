@@ -107,7 +107,6 @@
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="FileOperations\FileOperationOptions.cs" />
     <Compile Include="Logging\CopySpeedUomTypes.cs" />
-    <Compile Include="Logging\EventLogger.cs" />
     <Compile Include="Logging\FileLogger.cs" />
     <Compile Include="Internal\Helpers.cs" />
     <Compile Include="Logging\ICopyProgressLogger.cs" />
@@ -131,7 +130,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
+      <UserProperties BuildVersion_AssemblyInfoFilename="" BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -121,10 +121,8 @@ namespace BananaHomie.ZCopy.Commands
             else
             {
                 if (LogFile != null)
-                    list.Add(new FileLogger(LogFile, false));
-
-                // If '-lf' is specified but not '--tee', a console logger will not be used
-                if (NoConsoleOutput || LogFile != null && !TeeOutput)
+                    list.Add(new FileLogger(LogFile, false));                
+                if (NoConsoleOutput || LogFile != null && !TeeOutput) // If '-lf' is specified but not '--tee', a console logger will not be used
                     return list;
                 if (BasicConsoleOutput || ThreadCount.HasValue)
                     list.Add(new BasicConsoleLogger());
