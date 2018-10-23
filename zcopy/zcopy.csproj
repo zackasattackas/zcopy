@@ -113,9 +113,9 @@
     <Compile Include="Internal\NativeMethods.cs" />
     <Compile Include="Internal\SafeTokenHandle.cs" />
     <Compile Include="Internal\FileUtils.cs" />
-    <Compile Include="FileOperations\FileOperationProgressEventArgs.cs" />
-    <Compile Include="FileOperations\FileCopy.cs" />
-    <Compile Include="FileOperations\FileMove.cs" />
+    <Compile Include="FileOperations\FileOperationChunkFinishedEventArgs.cs" />
+    <Compile Include="FileOperations\FileCopyOperation.cs" />
+    <Compile Include="FileOperations\FileMoveOperation.cs" />
     <Compile Include="FileOperations\FileOperation.cs" />
     <Compile Include="Logging\BasicConsoleLogger.cs" />
     <Compile Include="Program.cs" />
@@ -130,7 +130,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" BuildVersion_AssemblyInfoFilename="" />
+      <UserProperties BuildVersion_AssemblyInfoFilename="" BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -54,7 +54,7 @@ namespace BananaHomie.ZCopy.FileOperations
         #region Events
 
         public event EventHandler<FileOperationStartedEventArgs> OperationStarted;
-        public event EventHandler<FileOperationProgressEventArgs> ChunkFinished;
+        public event EventHandler<FileOperationChunkFinishedEventArgs> ChunkFinished;
         public event EventHandler<FileOperationCompletedEventArgs> OperationCompleted;
         public event EventHandler<FileOperationErrorEventArgs> Error;
         public event EventHandler<FileOperationRetryStartedEventArgs> RetryStarted; 
@@ -160,7 +160,7 @@ namespace BananaHomie.ZCopy.FileOperations
             OperationStarted?.Invoke(sender, args);
         }
 
-        protected void OnChunkFinished(object sender, FileOperationProgressEventArgs args)
+        protected void OnChunkFinished(object sender, FileOperationChunkFinishedEventArgs args)
         {
             ChunkFinished?.Invoke(sender, args);
         }
@@ -298,7 +298,7 @@ namespace BananaHomie.ZCopy.FileOperations
 
         protected void ProgressHandler(FileInfo source, FileInfo destination, long copied, long chunkSize)
         {
-            OnChunkFinished(this, new FileOperationProgressEventArgs(source, destination, copied, chunkSize));
+            OnChunkFinished(this, new FileOperationChunkFinishedEventArgs(source, destination, copied, chunkSize));
         }
 
         #endregion

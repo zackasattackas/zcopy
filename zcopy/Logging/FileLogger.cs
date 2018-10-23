@@ -29,7 +29,7 @@ namespace BananaHomie.ZCopy.Logging
 
         public void Initialize(CommandLineApplication app, FileOperation fileOperation)
         {
-            isCopy = fileOperation is FileCopy;
+            isCopy = fileOperation is FileCopyOperation;
             fileOperation.OperationStarted += FileOperationOnOperationStarted;
             fileOperation.OperationCompleted += FileOperationOnOperationCompleted;
             fileOperation.ChunkFinished += FileOperationOnChunkFinished;
@@ -82,7 +82,7 @@ namespace BananaHomie.ZCopy.Logging
             // Not used currently
         }
 
-        private void FileOperationOnChunkFinished(object sender, FileOperationProgressEventArgs e)
+        private void FileOperationOnChunkFinished(object sender, FileOperationChunkFinishedEventArgs e)
         {
             // Not used currently
         }

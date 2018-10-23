@@ -3,7 +3,7 @@ using System.IO;
 
 namespace BananaHomie.ZCopy.FileOperations
 {
-    public class FileOperationProgressEventArgs
+    public class FileOperationChunkFinishedEventArgs
     {
         #region Properties
 
@@ -17,7 +17,7 @@ namespace BananaHomie.ZCopy.FileOperations
 
         #region Ctor
 
-        public FileOperationProgressEventArgs(FileInfo sourceFile, FileInfo destinationFile, long bytesCopied, long chunkSize)
+        public FileOperationChunkFinishedEventArgs(FileInfo sourceFile, FileInfo destinationFile, long bytesCopied, long chunkSize)
         {
             SourceFile = sourceFile;
             DestinationFile = destinationFile;

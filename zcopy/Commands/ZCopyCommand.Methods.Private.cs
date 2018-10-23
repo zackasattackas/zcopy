@@ -103,7 +103,7 @@ namespace BananaHomie.ZCopy.Commands
             var speed = Helpers.GetCopySpeed(stats.BytesTransferred, speedbase, elapsed);
 
             ZCopyOutput.Print($"{elapsed.ToString(elapsedFmt)} elapsed | " +
-                                  $"{stats.TotalFiles} file(s) ({transferred}) {(operation is FileMove ? "moved" : "copied")} | " +
+                                  $"{stats.TotalFiles} file(s) ({transferred}) {(operation is FileMoveOperation ? "moved" : "copied")} | " +
                                   $"{Helpers.CopySpeedToString(uom, speed)} (avg)");
             ZCopyOutput.Print(cancellation.IsCancellationRequested? "\r\nThe operation was cancelled" : "The operation completed successfully");
         }
@@ -135,7 +135,7 @@ namespace BananaHomie.ZCopy.Commands
 
         private FileOperation NewFileCopyOperation()
         {
-            var fileCopy = new FileCopy(
+            var fileCopy = new FileCopyOperation(
                 new DirectoryInfo(Source),
                 new DirectoryInfo(Destination),
                 GetFileFilters(),
@@ -151,7 +151,7 @@ namespace BananaHomie.ZCopy.Commands
 
         private FileOperation NewFileMoveOperation()
         {
-            var fileMove = new FileMove(
+            var fileMove = new FileMoveOperation(
                 new DirectoryInfo(Source),
                 new DirectoryInfo(Destination),
                 GetFileFilters(),

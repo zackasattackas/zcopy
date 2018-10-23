@@ -6,11 +6,11 @@ using System.IO;
 
 namespace BananaHomie.ZCopy.FileOperations
 {
-    public class FileMove : FileOperation
+    public class FileMoveOperation : FileOperation
     {
         #region Ctor
 
-        public FileMove(
+        public FileMoveOperation(
             DirectoryInfo source,
             DirectoryInfo destination,
             List<ISearchFilter> fileFilters,

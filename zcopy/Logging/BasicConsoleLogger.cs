@@ -47,7 +47,7 @@ namespace BananaHomie.ZCopy.Logging
             operation.Error += MtfoOnError;
             //operation.RetryStarted += OperationOnRetryStarted;
 
-            isCopy = operation is FileCopy || operation is MultiThreadedFileCopy;
+            isCopy = operation is FileCopyOperation || operation is MultiThreadedFileCopy;
             cancellation = new CancellationTokenSource();
             stopwatch = Stopwatch.StartNew();
 
@@ -76,7 +76,7 @@ namespace BananaHomie.ZCopy.Logging
             Interlocked.Decrement(ref filesBeingCopied);
         }
 
-        private void MtfoOnChunkFinished(object sender, FileOperationProgressEventArgs e)
+        private void MtfoOnChunkFinished(object sender, FileOperationChunkFinishedEventArgs e)
         {
             Interlocked.Add(ref bytesCopied, e.ChunkSize);
             Interlocked.Increment(ref sizeIncrements);

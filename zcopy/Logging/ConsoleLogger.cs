@@ -67,7 +67,7 @@ namespace BananaHomie.ZCopy.Logging
                 fileOperation.Handlers.Add(verification);
             }
 
-            if ((fileOperation is FileCopy || fileOperation is MultiThreadedFileCopy) && fileOperation.Options.HasFlag(FileOperationOptions.VerifyMD5))
+            if ((fileOperation is FileCopyOperation || fileOperation is MultiThreadedFileCopy) && fileOperation.Options.HasFlag(FileOperationOptions.VerifyMD5))
             {
                 showVerificationStatus = true;
                 OutputFormat += " {7}";
@@ -119,7 +119,7 @@ namespace BananaHomie.ZCopy.Logging
         //    // Not used currently
         //}
 
-        private void FileOperationOnChunkFinished(object sender, FileOperationProgressEventArgs e)
+        private void FileOperationOnChunkFinished(object sender, FileOperationChunkFinishedEventArgs e)
         {
             handlerControl.WaitOne();
 
