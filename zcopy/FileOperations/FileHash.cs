@@ -46,7 +46,6 @@ namespace BananaHomie.ZCopy.FileOperations
 
         public static byte[] ComputeHash(FileInfo file, HashAlgorithm algorithm)
         {
-            algorithm.
             using (algorithm)
             using (var fstream = file.OpenRead())
                 return algorithm.ComputeHash(fstream);
