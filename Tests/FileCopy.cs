@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,6 +64,9 @@ namespace Tests
 
         public async Task CopyAsync(CancellationToken cancellation = default)
         {
+            if (Options.HasFlag(FileCopyOptions.VerifyFileHash) && HashAlgorithm == default)
+                throw new Exception($"The {FileCopyOptions.VerifyFileHash} bit flag was set, but no hashing algorithm was specified.");
+
             stopwatch.Start();
             OnStarted(this, new FileCopyStartedEventArgs2(Source, Destination));
             try
@@ -70,6 +74,9 @@ namespace Tests
                 using (var freader = OpenSource())
                 using (var fwriter = OpenDestination())
                 {
+                    if (freader.Position != fwriter.Position)
+                        freader.Position = fwriter.Position;
+
                     var inputBuffer = new byte[BufferSize];
                     var bytesWritten = 0;
                     var tries = 0;
@@ -82,21 +89,32 @@ namespace Tests
                             while (0 != (bytesRead = await freader.ReadAsync(inputBuffer, 0, inputBuffer.Length, cancellation))
                                    && !cancellation.IsCancellationRequested)
                             {                        
+                                cancellation.ThrowIfCancellationRequested();
                                 bytesWritten += await CopyBytesAsync(inputBuffer, bytesRead, fwriter);
 
                                 if (Options.HasFlag(FileCopyOptions.VerifyFileHash))
                                 {
-                                    sourceHash.AddRange(HashBytes(inputBuffer, bytesRead));
+                                    HashAlgorithm.TransformBlock(inputBuffer, 0, bytesRead, inputBuffer, 0);
                                     OnChunkHashed(this, new FileHashProgressEventArgs(Source, new FileHashProgressData(Source.Length, bytesRead, sourceHash.Count, stopwatch.Elapsed)));
                                 }
 
                                 OnChunkTransferred(this, new FileTransferProgressEventArgs(Source, Destination, new FileTransferProgressData(Source.Length, bytesRead, bytesWritten, stopwatch.Elapsed)));                                  
                             }
 
+
+                            if (Options.HasFlag(FileCopyOptions.VerifyFileHash))
+                            {
+                                HashAlgorithm.TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
+                                sourceHash = HashAlgorithm.Hash.ToList();
+                            }
+
+
                             break;
-                        }
+                        }                         
                         catch (Exception e)
                         {
+                            if (e is OperationCanceledException)
+                                throw;
                             if (!RetrySettings.Retry || tries >= RetrySettings.RetryCount)
                                 throw;
 
@@ -110,6 +128,7 @@ namespace Tests
                 if (Options.HasFlag(FileCopyOptions.VerifyFileHash))
                 {
                     stopwatch.Reset();
+                    Destination.Refresh();
                     EnsureChecksumsMatch(cancellation);
                 }
             }
@@ -212,30 +231,31 @@ namespace Tests
             return buffer.Length;
         }
 
-        private IEnumerable<byte> HashBytes(byte[] buffer, int count)
-        {
-            return HashAlgorithm.ComputeHash(buffer, 0, count);
-        }
-
         private async void EnsureChecksumsMatch(CancellationToken cancellation = default)
         {
-            if (HashAlgorithm == null)
-                throw new Exception($"The {FileCopyOptions.VerifyFileHash} bit flag was set, but no hashing algorithm was specified.");
-
-            var targetHash = new List<byte>();
-
-            HashAlgorithm?.Initialize();
+            HashAlgorithm.Initialize();
 
             using (var freader = Destination.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 var inputBuffer = new byte[BufferSize];
-                int bytesRead;
+                var bytesHashed = 0;
 
-                while ((bytesRead = await freader.ReadAsync(inputBuffer, 0, inputBuffer.Length, cancellation)) != 0)
+                try
                 {
-                    cancellation.ThrowIfCancellationRequested();
-                    targetHash.AddRange(HashBytes(inputBuffer, bytesRead));
-                    OnChunkHashed(this, new FileHashProgressEventArgs(Destination, new FileHashProgressData(Destination.Length, bytesRead, targetHash.Count, stopwatch.Elapsed)));
+                    int bytesRead;
+                    while (0 != (bytesRead = await freader.ReadAsync(inputBuffer, 0, inputBuffer.Length, cancellation)))
+                    {
+                        cancellation.ThrowIfCancellationRequested();
+                        HashAlgorithm.TransformBlock(inputBuffer, 0, bytesRead, inputBuffer, 0);
+                        OnChunkHashed(this,
+                            new FileHashProgressEventArgs(Destination,
+                                new FileHashProgressData(Destination.Length, bytesRead, bytesHashed += bytesRead, stopwatch.Elapsed)));
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
                 }
             }
 
@@ -247,8 +267,7 @@ namespace Tests
                 cancellation.ThrowIfCancellationRequested();
             }
 
-            OnHashComputed(this, new FileHashComputedEventArgs2(targetHash.ToArray()));
-
+            OnHashComputed(this, new FileHashComputedEventArgs2(HashAlgorithm.Hash));
         }
 
         #endregion

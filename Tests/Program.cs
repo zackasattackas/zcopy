@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace Tests
 {
@@ -7,20 +9,28 @@ namespace Tests
     {
         private static void Main(string[] args)
         {
-            var source = new FileInfo("");
-            var destination = new FileInfo("");
+            var source = new FileInfo("E:\\backup\\spx\\zack-desktop\\C_VOL-b002-i002.spi");
+            var destination = new FileInfo("D:\\C_VOL-b002-i002.spi");
             var options = FileCopyOptions.VerifyFileHash | FileCopyOptions.Restartable;
-            
-            using (var fileCopy = new FileCopy(source, destination, options))
-            {
-                fileCopy.Started += FileCopyOnStarted;
-                fileCopy.ChunkTransferred += FileCopyOnChunkTransferred;
-                fileCopy.ChunkHashed += FileCopyOnChunkHashed;
-                fileCopy.HashFailed += FileCopyOnHashFailed;
-                fileCopy.HashComputed += FileCopyOnHashComputed;
-                fileCopy.Completed += FileCopyOnCompleted;
 
-                fileCopy.Copy();
+            try
+            {
+                using (var fileCopy = new FileCopy(source, destination, options) )
+                {
+                    fileCopy.HashAlgorithm = new MD5Cng();
+                    //fileCopy.Started += FileCopyOnStarted;
+                    //fileCopy.ChunkTransferred += FileCopyOnChunkTransferred;
+                    //fileCopy.ChunkHashed += FileCopyOnChunkHashed;
+                    //fileCopy.HashFailed += FileCopyOnHashFailed;
+                    //fileCopy.HashComputed += FileCopyOnHashComputed;
+                    //fileCopy.Completed += FileCopyOnCompleted;
+
+                    fileCopy.Copy();
+                }
+            }
+            catch (Exception e)
+            {
+                Debugger.Break();
             }
         }
 
